@@ -1,1 +1,55 @@
-about contact index registration 
+body {
+    background: #F5F7FA;
+    color: #4B5563;
+}
+
+h1 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 40px;
+    font-family: 'Poppins', sans-serif;
+}
+
+h3 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 40px;
+    font-family: Arial, sans-serif;
+}
+
+/*header {
+    background: #1F2937;
+    color: black;
+}*/
+
+button {
+    color: gray;
+    font-size: 25px;
+}
+
+button:hover {
+    color: red;
+}
+
+div.nav,
+div.navbar-registeration {
+    padding: 15px 0;
+    gap: 40px;
+    display: flex;
+    justify-content: center;
+    height: 20px;
+    font-size: 24px;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+div.hero-content {
+    font-family: 'Roboto', sans-serif;
+}
+
+.nav {
+    display: flex;
+
+}
