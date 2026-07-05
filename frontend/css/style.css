@@ -22,16 +22,12 @@ h3 {
     font-family: Arial, sans-serif;
 }
 
-/*header {
-    background: #1F2937;
-    color: black;
-}*/
 
 .button {
     color: gray;
     padding: 5px 2px;
     text-decoration: none;
-    
+
     border-radius: 5px;
     min-width: 120px;
     min-height: 40px;
