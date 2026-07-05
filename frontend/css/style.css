@@ -1,5 +1,8 @@
 * {
-    background: #F5F7FA;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #F5F7FA;
     color: #4B5563;
 }
 
