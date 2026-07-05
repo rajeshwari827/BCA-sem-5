@@ -19,31 +19,14 @@ h3 {
     font-family: Arial, sans-serif;
 }
 
-/*.button {
-    color: gray;
-    padding: 7px 2px;
-    text-decoration: none;
-    gap: 15px;
-    border-radius: 5px;
-    min-width: 120px;
-    min-height: 40px;
-    font-size: 16px;
-    background-color: #142c94;
-
-}
-
-.button:hover {
-    background-color: red;
-}
-*/
-nav {
+.navbar {
     display: flex;
     gap: 10%;
     /* Space between menu items */
     margin-left: 20%;
 }
 
-.menu {
+.nav-btn {
     text-decoration: none;
     /* Remove underline (optional) */
     color: black;
@@ -53,7 +36,7 @@ nav {
     padding: 5px 0;
 }
 
-.menu:hover {
+.nav-btn:hover {
     color: orange;
     /* Hover effect */
 }
