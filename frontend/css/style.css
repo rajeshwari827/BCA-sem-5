@@ -1,5 +1,5 @@
 * {
-    background-color: #EAF6FF;
+    background-color: #EDF7E7;
     color: #4B5563;
 }
 
@@ -11,7 +11,7 @@ h1 {
     font-family: 'Poppins', sans-serif;
 }
 
-h3 {
+h4 {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -31,7 +31,7 @@ h3 {
     /* Remove underline (optional) */
     color: black;
     /* Text color */
-    font-size: 22px;
+    font-size: 25px;
     font-weight: bold;
     padding: 5px 0;
 }
@@ -42,5 +42,8 @@ h3 {
 }
 
 .hero-content {
+    align-items: center;
+    justify-content: space-between;
+    margin: 3%;
     font-family: 'Roboto', sans-serif;
 }
