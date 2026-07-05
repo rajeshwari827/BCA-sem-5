@@ -1,8 +1,5 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    background-color: #F5F7FA;
+    background-color: #EAF6FF;
     color: #4B5563;
 }
 
@@ -22,47 +19,43 @@ h3 {
     font-family: Arial, sans-serif;
 }
 
-
-.button {
+/*.button {
     color: gray;
-    padding: 5px 2px;
+    padding: 7px 2px;
     text-decoration: none;
-
+    gap: 15px;
     border-radius: 5px;
     min-width: 120px;
     min-height: 40px;
-    max-width: 200px;
-    max-height: 60px;
     font-size: 16px;
-    transition: background-color 0.3s ease;
     background-color: #142c94;
+
 }
 
 .button:hover {
     background-color: red;
 }
-
-.nav {
-    /* Dark background */
-    padding: 20px 20px;
+*/
+nav {
     display: flex;
-    justify-content: flex-end;
-    /* Align items to the right */
-    align-items: center;
-    margin: 0 auto;
-    height: 13px;
-    gap: 15px;
+    gap: 10%;
+    /* Space between menu items */
+    margin-left: 20%;
 }
 
-.navbar-registeration {
-    /* Dark background */
-    padding: 20px 20px;
-    display: flex;
-    justify-content: flex-end;
-    /* Align items to the right */
-    align-items: center;
-    height: 13px;
-    gap: 15px;
+.menu {
+    text-decoration: none;
+    /* Remove underline (optional) */
+    color: black;
+    /* Text color */
+    font-size: 22px;
+    font-weight: bold;
+    padding: 5px 0;
+}
+
+.menu:hover {
+    color: orange;
+    /* Hover effect */
 }
 
 .hero-content {
