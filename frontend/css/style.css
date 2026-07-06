@@ -1,12 +1,5 @@
 * {
-
-    background-color: #EAF6FF;
-
-    /* margin: 0;
-    padding: 0;
-    box-sizing: border-box; */
     background-color: #F5F7FA;
-
     color: #4B5563;
 }
 
@@ -18,7 +11,7 @@ h1 {
     font-family: 'Poppins', sans-serif;
 }
 
-h3 {
+h4 {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -26,25 +19,6 @@ h3 {
     font-family: Arial, sans-serif;
 }
 
-
-
-/*.button {
-    color: gray;
-    padding: 7px 2px;
-    text-decoration: none;
-    gap: 15px;
-    border-radius: 5px;
-    min-width: 120px;
-    min-height: 40px;
-    font-size: 16px;
-    background-color: #142c94;
-
-}
-
-.button:hover {
-    background-color: red;
-}
-*/
 
 .navbar {
 
@@ -56,17 +30,29 @@ h3 {
 
 
 .header-container {
-  display: flex;
-  align-items: center;
-  gap: 15px; /* Adjust spacing between logo and heading */
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    /* Adjust spacing between logo and heading */
 }
 
 
 .nav {
+
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 30px;
+    background: #ffffff;
+
+
+
      display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 20px 50px; 
+
 }
 
 
@@ -77,7 +63,18 @@ h3 {
     /* Remove underline (optional) */
     /* color: black;
     /* Text color */
+
     /* font-size: 22px;
+    font-weight: bold;
+    padding: 5px 0; */ 
+/* }  */
+
+
+
+    /* font-size: 25px; */
+
+    /* font-size: 22px;
+
     font-weight: bold;
     padding: 5px 0; */ 
 /* }  */
@@ -88,13 +85,28 @@ h3 {
 /* } */ 
 
 .hero-content {
+    align-items: center;
+    justify-content: space-between;
+    margin: 3%;
     font-family: 'Roboto', sans-serif;
 }
 
-.logo img{
-    width:80px;      /* Change to 70px or 90px as needed */
-    height:80px;
-    object-fit:contain;
+.logo img {
+    width: 80px;
+    /* Change to 70px or 90px as needed */
+    height: 80px;
+    object-fit: contain;
+}
+
+
+.title {
+    margin-left: 15px;
+    flex: 1;
+}
+
+.title h2 {
+    font-size: 28px;
+    color: #2E7D32;
 }
 
 .title{
@@ -109,23 +121,24 @@ h3 {
      text-align: right;
     font-size:28px;
     color:#2E7D32;
+
 }
 
-.title p{
-    font-size:15px;
-    color:#555;
+.title p {
+    font-size: 15px;
+    color: #555;
 }
 
-.nav{
-    display:flex;
-    list-style:none;
-    gap:15px;
+.nav {
+    display: flex;
+    list-style: none;
+    gap: 15px;
 }
 
-.nav a{
-    text-decoration:none;
-    padding:10px 18px;
-    background:#C62828;
-    color:white;
-    border-radius:5px;
+.nav a {
+    text-decoration: none;
+    padding: 10px 18px;
+    background: #C62828;
+    color: white;
+    border-radius: 5px;
 }
