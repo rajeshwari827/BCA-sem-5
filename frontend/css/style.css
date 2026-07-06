@@ -4,95 +4,35 @@
 }
 
 .navbar {
-
     display: flex;
-    gap: 10%;
+    gap: 20px;
     /* Space between menu items */
-    margin-left: 20%;
+    margin-left: 20px;
+
 }
-
-
-.header-container {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    /* Adjust spacing between logo and heading */
-}
-
-
-.nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    background-color: #ffffff;
-}
-
-
-.nav-btn {
-
-    text-decoration: none;
-    /* Remove underline (optional) */
-    /* color: black;
-    /* Text color */
-
-    font-size: 22px;
-    font-weight: bold;
-    padding: 5px 0;
-}
-
-.nav-btn:hover {
-    color: orange;
-    /* Hover effect */
-}
-
-.hero-content {
-    align-items: center;
-    justify-content: space-between;
-    margin: 3%;
-    font-family: 'Roboto', sans-serif;
-}
-
 
 .logo img {
     width: 80px;
     /* Change to 70px or 90px as needed */
-    height: 80px;
+    height: 90px;
     object-fit: contain;
-}
-
-
-.title {
-    margin-left: 15px;
-    flex: 1;
-
-}
-
-.title h2 {
-    font-size: 28px;
-    color: #5907c5;
-
+    padding: 20px;
 }
 
 .title {
-
-
     margin-right: 15px;
-    /* flex:1; */
-    gap: 20px;
+    padding: 3px;
 }
 
 .title h2 {
     text-align: right;
     font-size: 28px;
     color: #2E7D32;
-
 }
 
 .title p {
     font-size: 15px;
     color: #a70a0a;
-
 }
 
 .navbar2 {
@@ -100,7 +40,8 @@
     display: flex;
     gap: 30px;
     /* Space between menu items */
-    margin-left: 10px;
+    margin-left: 32%;
+    padding: 20px;
 }
 
 .nav-btn {
@@ -118,37 +59,9 @@
     /* Hover effect */
 }
 
-.header-container {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    /* Adjust spacing between logo and heading */
-}
-
-
 .hero-content {
     align-items: center;
     justify-content: space-between;
     margin: 3%;
     font-family: 'Roboto', sans-serif;
-}
-
-/*.nav {
-    display: flex;
-    list-style: none;
-    gap: 15px;
-}*/
-
-/*.nav a {
-    text-decoration: none;
-    padding: 10px 18px;
-    background: #C62828;
-    color: white;
-    border-radius: 5px;
-}*/
-.temp {
-    height: 110px;
-    width: auto;
-    text-align: center;
-
 }
