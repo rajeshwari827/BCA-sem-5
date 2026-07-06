@@ -38,31 +38,42 @@ h4 {
 
 
 .nav {
+
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px 30px;
     background: #ffffff;
 
+
+     display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 50px; 
+
 }
 
 
 
-.nav-btn {
+/* .nav-btn {
 
     text-decoration: none;
     /* Remove underline (optional) */
-    color: black;
+    /* color: black;
     /* Text color */
-    font-size: 25px;
-    font-weight: bold;
-    padding: 5px 0;
-}
 
-.nav-btn:hover {
+    /* font-size: 25px; */
+
+    /* font-size: 22px;
+
+    font-weight: bold;
+    padding: 5px 0; */ 
+/* }  */
+
+/* .nav-btn:hover {
     color: orange;
     /* Hover effect */
-}
+/* } */ 
 
 .hero-content {
     align-items: center;
@@ -78,6 +89,7 @@ h4 {
     object-fit: contain;
 }
 
+
 .title {
     margin-left: 15px;
     flex: 1;
@@ -86,6 +98,21 @@ h4 {
 .title h2 {
     font-size: 28px;
     color: #2E7D32;
+}
+
+.title{
+
+   
+    margin-right:15px;
+    /* flex:1; */
+    gap: 20px;
+}
+
+.title h2{
+     text-align: right;
+    font-size:28px;
+    color:#2E7D32;
+
 }
 
 .title p {
