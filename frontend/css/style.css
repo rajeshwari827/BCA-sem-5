@@ -4,13 +4,55 @@
 }
 
 .navbar {
+
+    display: flex;
+    gap: 10%;
+    /* Space between menu items */
+    margin-left: 20%;
+}
+
+
+.header-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    /* Adjust spacing between logo and heading */
+}
+
+
+.nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
     background-color: #ffffff;
-
 }
+
+
+.nav-btn {
+
+    text-decoration: none;
+    /* Remove underline (optional) */
+    /* color: black;
+    /* Text color */
+
+    font-size: 22px;
+    font-weight: bold;
+    padding: 5px 0;
+}
+
+.nav-btn:hover {
+    color: orange;
+    /* Hover effect */
+}
+
+.hero-content {
+    align-items: center;
+    justify-content: space-between;
+    margin: 3%;
+    font-family: 'Roboto', sans-serif;
+}
+
 
 .logo img {
     width: 80px;
@@ -18,6 +60,7 @@
     height: 80px;
     object-fit: contain;
 }
+
 
 .title {
     margin-left: 15px;
@@ -28,6 +71,21 @@
 .title h2 {
     font-size: 28px;
     color: #5907c5;
+
+}
+
+.title {
+
+
+    margin-right: 15px;
+    /* flex:1; */
+    gap: 20px;
+}
+
+.title h2 {
+    text-align: right;
+    font-size: 28px;
+    color: #2E7D32;
 
 }
 
