@@ -3,13 +3,6 @@
     color: #4B5563;
 }
 
-.navbar {
-    display: flex;
-    gap: 20px;
-    /* Space between menu items */
-    margin-left: 20px;
-
-}
 
 .logo img {
     width: 80px;
@@ -20,11 +13,13 @@
 }
 
 .title {
-    margin-right: 15px;
-    padding: 3px;
+             
+    
+   
+    
 }
 
-.title h2 {
+.title h1 {
     text-align: right;
     font-size: 28px;
     color: #2E7D32;
@@ -58,12 +53,42 @@
     color: orange;
     /* Hover effect */
 }
+.hero{
+ position:relative;
+/* here only the main photo of food donation and the writting not the menu  */
+    height:700px;
 
-.hero-content {
-    align-items: center;
-    justify-content: space-between;
-    margin: 3%;
-    font-family: 'Roboto', sans-serif;
+    overflow:hidden;
+}
 
+.hero-image{
 
+    width:100%;
+
+    height:100%;
+
+    object-fit:cover;
+}
+
+.hero-content{
+
+    position:absolute;
+
+    top:50%;
+
+    left:50%;
+
+    transform:translate(-50%,-50%);
+
+    text-align:center;
+
+    color:white;
+}
+
+.hero_section {
+
+    position:relative;
+    width:100%;
+    height:650px;
+    overflow:hidden;
 }
