@@ -3,31 +3,28 @@
     color: #4B5563;
 }
 
-
-.logo img {
-    width: 80px;
-    /* Change to 70px or 90px as needed */
-    height: 90px;
-    object-fit: contain;
+.header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
     padding: 20px;
 }
 
-.title {
-             
-    
-   
-    
+.logo {
+    width: 100px;
+    height: 100px;
 }
 
-.title h1 {
-    text-align: right;
+.header h1 {
+    margin: 0;
+    color: #2e7d32;
+    font-size: 60px;
+}
+
+.header p {
+    margin: 0;
+    color: #b71c1c;
     font-size: 28px;
-    color: #2E7D32;
-}
-
-.title p {
-    font-size: 15px;
-    color: #a70a0a;
 }
 
 .navbar2 {
@@ -35,7 +32,7 @@
     display: flex;
     gap: 100px;
     /* Space between menu items */
-    margin-left: 32%;
+    margin-left: 20%;
     padding: 20px;
 }
 
@@ -53,42 +50,119 @@
     color: orange;
     /* Hover effect */
 }
-.hero{
- position:relative;
-/* here only the main photo of food donation and the writting not the menu  */
-    height:700px;
 
-    overflow:hidden;
+.inf-img1 {
+    width: 30%;
+    height: 30%;
+    margin-left: 10%;
 }
 
-.hero-image{
-
-    width:100%;
-
-    height:100%;
-
-    object-fit:cover;
+.information1 {
+    display: flex;
+    gap: 10px;
+    padding: 5%;
 }
 
-.hero-content{
+.inf-p1 {
+    font-size: 24px;
+    padding: 50px;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    color: grey;
+}
 
-    position:absolute;
+.inf-img2 {
+    width: 40%;
+    height: 40%;
+    margin-left: 10%;
+}
 
-    top:50%;
+.information2 {
+    display: flex;
+    gap: 10px;
+    padding: 5%;
+}
 
-    left:50%;
+.inf-p2 {
+    font-size: 22px;
+    padding: 50px;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    color: grey;
+}
 
-    transform:translate(-50%,-50%);
+.inf-img3 {
+    width: 30%;
+    height: 30%;
+    margin-left: 10%;
+}
 
-    text-align:center;
+.information3 {
+    display: flex;
+    gap: 10px;
+    padding: 5%;
+}
 
-    color:white;
+.inf-p3 {
+    font-size: 24px;
+    padding: 80px;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    color: grey;
+}
+
+.inf-img4 {
+    width: 30%;
+    height: 30%;
+    margin-left: 10%;
+}
+
+.information4 {
+    display: flex;
+    gap: 10px;
+    padding: 5%;
+}
+
+.inf-p4 {
+    font-size: 24px;
+    padding: 50px;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    color: grey;
+}
+
+.hero {
+    position: relative;
+    /* here only the main photo of food donation and the writting not the menu  */
+    height: 700px;
+
+    overflow: hidden;
+}
+
+.hero-image {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+}
+
+.hero-content {
+
+    position: absolute;
+
+    top: 50%;
+
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    text-align: center;
+
+    color: white;
 }
 
 .hero_section {
 
-    position:relative;
-    width:100%;
-    height:650px;
-    overflow:hidden;
+    position: relative;
+    width: 100%;
+    height: 650px;
+    overflow: hidden;
 }
