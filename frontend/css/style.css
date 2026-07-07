@@ -33,7 +33,7 @@
 .navbar2 {
 
     display: flex;
-    gap: 30px;
+    gap: 100px;
     /* Space between menu items */
     margin-left: 32%;
     padding: 20px;
