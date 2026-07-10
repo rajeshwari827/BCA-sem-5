@@ -10,6 +10,9 @@ body {
     height: 100vh;
     margin: 0;
     background: #f2f2f2;
+    background:url("../Images/bg-login.png") no-repeat center center;
+    background-size:cover;
+    overflow:hidden;
 }
 
 .bg-login {
@@ -45,52 +48,105 @@ h1 {
     font-weight: 1000;
 
 }
+h4{
+    width:450px;
 
-form {
-    width: 350px;
-    background: #ffffff;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-    background: transparent;
+    text-align:center;
+
+    margin:20px 0;
+
+    line-height:1.5;
+
+    font-size:18px;
 }
+table{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+form {
+   width: 480px;
+    padding: 40px 50px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    margin: auto;
+ } 
 
 form h1 {
+   font-size: 48px;
+    margin-bottom: 30px;
     text-align: center;
-    margin-bottom: 20px;
-    color: #666666;
 }
-
+tr{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 td {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 15px;
     font-weight: bold;
     color: #555;
-}
-
-td input {
+    align-items: center;
+    
     width: 100%;
+    font-size: 22px;
+   
+    padding-bottom:15px;
+}
+input{
+      width: 450px;
+    height: 50px;
+
+    border-radius:10px;
+
+    padding:12px;
+
+    font-size:20px;
+}
+td input {
+    
+    
+    
+     display: block;
+    width: 350px;
+    height: 45px;
+    margin: 10px auto 20px auto;
+    border-radius: 8px;
     padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 15px;
+    font-size: 18px;
 }
 
 td input:focus {
     outline: none;
     border-color: #007bff;
+    align-items: center;
 }
 
 form button {
-    width: 100%;
-    padding: 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
+   
+     width:450px;
+
+    height:50px;
+
+    border:none;
+
+    border-radius:10px;
+
+    font-size:22px;
+
+    background:#2E7D32;
+
+    color:white;
+
+    cursor:pointer;
 }
 
 form button:hover {
