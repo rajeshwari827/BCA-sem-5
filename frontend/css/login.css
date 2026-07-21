@@ -65,8 +65,9 @@ table{
     justify-content: center;
 }
 form {
-    width: 470px;
-    padding: 40px 50px;
+    width: 480px;
+    
+    padding: 45px 55px;
     background: rgba(255,255,255,0.15);
     backdrop-filter: blur(10px);
     border-radius: 20px;
@@ -101,12 +102,12 @@ td {
     padding-bottom:15px;
 }
 input{
-      width: 30px;
+      width: 20px;
     height: 35px;
 
     border-radius:10px;
 
-    padding:12px;
+    padding:05px;
 
     font-size:13px;
 }
@@ -115,11 +116,11 @@ td input {
     
     
      display: block;
-    width: 350px;
-    height: 45px;
+    width: 300px;
+    height: 30px;
     margin: 10px auto 20px auto;
     border-radius: 8px;
-    padding: 10px;
+    padding: 5px;
     font-size: 18px;
 }
 
