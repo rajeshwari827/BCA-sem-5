@@ -10,14 +10,17 @@ body {
     height: 100vh;
     margin: 0;
     background: #f2f2f2;
-    background:url("../Images/bg-login.png") no-repeat center center;
-    background-size:cover;
-    overflow:hidden;
+    background: url("../Images/bg-login.png") no-repeat center center;
+    background-size: cover;
+    overflow: hidden;
 }
 
-.bg-login {
-    width: 100%;
-    height: 100%;
+.rbg-login {
+
+    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
+    background-size: cover;
+    background-position: center;
+
 }
 
 .page {
@@ -25,7 +28,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
+    /*min-height: 100vh;*/
 }
 
 .logo {
@@ -36,7 +39,7 @@ body {
 .login-box {
     width: 420px;
     background: #fff;
-    padding: 30px;
+    /*padding: 30px;*/
     border-radius: 15px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
 }
@@ -48,79 +51,80 @@ h1 {
     font-weight: 1000;
 
 }
-h4{
-    width:450px;
 
-    text-align:center;
+h4 {
+    width: 450px;
 
-    margin:20px 0;
+    text-align: center;
 
-    line-height:1.5;
+    margin: 20px 0;
 
-    font-size:18px;
+    line-height: 1.5;
+
+    font-size: 18px;
 }
-table{
+
+/*table {
     width: 100%;
     display: flex;
     justify-content: center;
-}
-form {
+}*/
+
+/*form {
     width: 480px;
-    
-    padding: 45px 55px;
-    background: rgba(255,255,255,0.15);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 
-    margin: auto;
- } 
+    /*padding: 15px 15px;
+background: rgba(255, 255, 255, 0.15);
+backdrop-filter: blur(10px);
+border-radius: 20px;
+box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+display: flex;
+flex-direction: column;
+align-items: center;
 
+margin: auto;
+}
+
+*/
 form h1 {
-   font-size: 30px;
-    margin-bottom: 30px;
+    font-size: 30px;
+    /*margin-bottom: 30px;*/
     text-align: center;
 }
-tr{
+
+tr {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
+
 td {
     display: block;
     margin-bottom: 15px;
     font-weight: bold;
     color: #555;
     align-items: center;
-    
     /* width: %; */
     font-size: 15px;
-   
-    padding-bottom:15px;
+    /* padding-bottom: 15px;*/
 }
-input{
-      width: 20px;
+
+input {
+    width: 20px;
     height: 35px;
-
-    border-radius:10px;
-
-    padding:05px;
-
-    font-size:13px;
+    border-radius: 10px;
+    /*padding: 5px;*/
+    font-size: 13px;
 }
+
 td input {
-    
-    
-    
-     display: block;
+    display: block;
     width: 300px;
     height: 30px;
     margin: 10px auto 20px auto;
     border-radius: 8px;
-    padding: 5px;
+    /*padding: 5px;
+    */
     font-size: 18px;
 }
 
@@ -131,22 +135,14 @@ td input:focus {
 }
 
 form button {
-   
-     width:450px;
-
-    height:50px;
-
-    border:none;
-
-    border-radius:10px;
-
-    font-size:22px;
-
-    background:#2E7D32;
-
-    color:white;
-
-    cursor:pointer;
+    width: 450px;
+    height: 50px;
+    border: none;
+    border-radius: 10px;
+    font-size: 22px;
+    background: #2E7D32;
+    color: white;
+    cursor: pointer;
 }
 
 form button:hover {
