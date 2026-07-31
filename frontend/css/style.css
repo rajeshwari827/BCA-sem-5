@@ -30,76 +30,20 @@
     /* Hover effect */
 }
 
-.inf-img1 {
+.information {
+    display: flex;
+    gap: 10px;
+    padding: 5%;
+    /*background-color: rgb(160, 60, 75);*/
+}
+
+.inf-img {
     width: 30%;
     height: 30%;
     margin-left: 10%;
 }
 
-.information1 {
-    display: flex;
-    gap: 10px;
-    padding: 5%;
-}
-
-.inf-p1 {
-    font-size: 24px;
-    padding: 50px;
-    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-    color: grey;
-}
-
-.inf-img2 {
-    width: 40%;
-    height: 40%;
-    margin-left: 10%;
-}
-
-.information2 {
-    display: flex;
-    gap: 10px;
-    padding: 5%;
-}
-
-.inf-p2 {
-    font-size: 22px;
-    padding: 50px;
-    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-    color: grey;
-}
-
-.inf-img3 {
-    width: 30%;
-    height: 30%;
-    margin-left: 10%;
-}
-
-.information3 {
-    display: flex;
-    gap: 10px;
-    padding: 5%;
-}
-
-.inf-p3 {
-    font-size: 24px;
-    padding: 80px;
-    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-    color: grey;
-}
-
-.inf-img4 {
-    width: 30%;
-    height: 30%;
-    margin-left: 10%;
-}
-
-.information4 {
-    display: flex;
-    gap: 10px;
-    padding: 5%;
-}
-
-.inf-p4 {
+.inf-p {
     font-size: 24px;
     padding: 50px;
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;

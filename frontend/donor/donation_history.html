@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donation History | HungerFree</title>
+
+    <link rel="stylesheet" href="donor.css">
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+
+    <div class="sidebar">
+
+        <h2>🍽 HungerFree</h2>
+
+        <a href="donor_dashboard.html">🏠 Dashboard</a>
+
+        <a href="donor_food.html">🍱 Donate Food</a>
+
+        <a href="donation_history.html" class="active">📜 Donation History</a>
+
+        <a href="profile.html">👤 My Profile</a>
+
+        <a href="../login.html">🚪 Logout</a>
+
+    </div>
+
+    <!-- Main Content -->
+
+    <div class="main-content">
+
+        <h1>Donation History</h1>
+
+        <p>View all your donated food records.</p>
+
+        <!-- Search and Filter -->
+
+        <div class="top-controls">
+
+            <input type="text" placeholder="Search Food Name">
+
+            <select>
+                <option>All Status</option>
+                <option>Pending</option>
+                <option>Accepted</option>
+                <option>Picked Up</option>
+                <option>Rejected</option>
+            </select>
+
+        </div>
+
+        <!-- Donation Table -->
+
+        <table>
+
+            <tr>
+                <th>Donation ID</th>
+                <th>Food Name</th>
+                <th>Category</th>
+                <th>Quantity</th>
+                <th>Date</th>
+                <th>Status</th>
+            </tr>
+
+            <tr>
+                <td>101</td>
+                <td>Rice</td>
+                <td>Veg</td>
+                <td>20 Kg</td>
+                <td>10 July 2026</td>
+                <td><span class="accepted">Accepted</span></td>
+            </tr>
+
+            <tr>
+                <td>102</td>
+                <td>Bread</td>
+                <td>Bakery</td>
+                <td>50 Packets</td>
+                <td>12 July 2026</td>
+                <td><span class="pending">Pending</span></td>
+            </tr>
+
+            <tr>
+                <td>103</td>
+                <td>Milk</td>
+                <td>Beverages</td>
+                <td>30 Litres</td>
+                <td>13 July 2026</td>
+                <td><span class="picked">Picked Up</span></td>
+            </tr>
+
+            <tr>
+                <td>104</td>
+                <td>Vegetables</td>
+                <td>Veg</td>
+                <td>15 Kg</td>
+                <td>15 July 2026</td>
+                <td><span class="accepted">Accepted</span></td>
+            </tr>
+
+            <tr>
+                <td>105</td>
+                <td>Cake</td>
+                <td>Bakery</td>
+                <td>10 Boxes</td>
+                <td>18 July 2026</td>
+                <td><span class="rejected">Rejected</span></td>
+            </tr>
+
+            <tr>
+                <td>106</td>
+                <td>Dal</td>
+                <td>Veg</td>
+                <td>25 Kg</td>
+                <td>20 July 2026</td>
+                <td><span class="pending">Pending</span></td>
+            </tr>
+
+        </table>
+
+    </div>
+
+</body>
+
+</html>

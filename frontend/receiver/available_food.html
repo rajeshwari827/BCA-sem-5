@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Food | HungerFree</title>
+
+    <link rel="stylesheet" href="receiver.css">
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+
+    <div class="sidebar">
+
+        <h2>🍽 HungerFree</h2>
+
+        <a href="receiver_dashboard.html">🏠 Dashboard</a>
+
+        <a href="available_food.html" class="active">🍱 Available Food</a>
+
+        <a href="accepted_food.html">✔ Accepted Food</a>
+
+        <a href="profile.html">👤 My Profile</a>
+
+        <a href="../login.html">🚪 Logout</a>
+
+    </div>
+
+    <!-- Main Content -->
+
+    <div class="main-content">
+
+        <h1>Available Food</h1>
+
+        <p>View all available food donations from donors.</p>
+
+        <!-- Search & Filter -->
+
+        <div class="top-controls">
+
+            <input type="text" placeholder="Search Food">
+
+            <select>
+                <option>All Categories</option>
+                <option>Veg</option>
+                <option>Non-Veg</option>
+                <option>Bakery</option>
+                <option>Beverages</option>
+                <option>Packed Food</option>
+            </select>
+
+            <select>
+                <option>All Cities</option>
+                <option>Rajkot</option>
+                <option>Ahmedabad</option>
+                <option>Surat</option>
+            </select>
+
+        </div>
+
+        <!-- Food Table -->
+
+        <table>
+
+            <tr>
+
+                <th>Restaurant</th>
+
+                <th>Food</th>
+
+                <th>Category</th>
+
+                <th>Quantity</th>
+
+                <th>Cooking Time</th>
+
+                <th>Pickup Address</th>
+
+                <th>Contact</th>
+
+                <th>Status</th>
+
+                <th>Action</th>
+
+            </tr>
+
+            <tr>
+
+                <td>Rahul Restaurant</td>
+
+                <td>Rice</td>
+
+                <td>Veg</td>
+
+                <td>20 Kg</td>
+
+                <td>10:00 AM</td>
+
+                <td>150 Ring Road, Rajkot</td>
+
+                <td>9876543210</td>
+
+                <td class="available">Available</td>
+
+                <td><button>Accept</button></td>
+
+            </tr>
+
+            <tr>
+
+                <td>ABC Hotel</td>
+
+                <td>Bread</td>
+
+                <td>Bakery</td>
+
+                <td>50 Pieces</td>
+
+                <td>9:30 AM</td>
+
+                <td>Kalawad Road, Rajkot</td>
+
+                <td>9876543211</td>
+
+                <td class="available">Available</td>
+
+                <td><button>Accept</button></td>
+
+            </tr>
+
+            <tr>
+
+                <td>Royal Restaurant</td>
+
+                <td>Vegetables</td>
+
+                <td>Veg</td>
+
+                <td>30 Kg</td>
+
+                <td>11:00 AM</td>
+
+                <td>University Road, Rajkot</td>
+
+                <td>9876543212</td>
+
+                <td class="available">Available</td>
+
+                <td><button>Accept</button></td>
+
+            </tr>
+
+            <tr>
+
+                <td>Food Corner</td>
+
+                <td>Milk</td>
+
+                <td>Beverages</td>
+
+                <td>15 Litres</td>
+
+                <td>8:30 AM</td>
+
+                <td>Raiya Road, Rajkot</td>
+
+                <td>9876543213</td>
+
+                <td class="available">Available</td>
+
+                <td><button>Accept</button></td>
+
+            </tr>
+
+        </table>
+
+    </div>
+
+</body>
+
+</html>
