@@ -6,15 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login for existing user</title>
     <link rel="stylesheet" href="css/login.css">
+    
 </head>
 
 <body>
-    <form>
+   <form id="loginForm">
         <table>
             <h1>LOGIN FOR EXISTING USERS</h1>
 
             <tr>
-                <td>Admin ID: <input type="text" id="adminid" name="adminid" placeholder="Enter Admin ID" required>
+                <td>
+                <input
+    type="text"
+    id="userid"
+    name="userid"
+    placeholder="Enter User ID (DN001 / RN001)"
+    required>
                 </td>
             </tr>
             <tr>
@@ -35,7 +42,7 @@
             and <a href="ngo_registration.html">Food Reciver</a> </h4>
         <button>Submit</button>
     </form>
-
+<script src="js/login.js"></script>
 
 </body>
 

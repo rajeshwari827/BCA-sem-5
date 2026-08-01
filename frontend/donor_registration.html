@@ -9,9 +9,8 @@
 </head>
 
 <body>
-    <form>
-        <table>
-            <h1>LOGIN AS DONOR</h1>
+    <form id="donorForm">
+
 
             <tr>
                 <td>Donor ID: <input type="text" id="userId" name="userId" placeholder="Enter Donor ID" required>
@@ -58,9 +57,63 @@
                 <td>Location: <input type="location" id="location" name="location" required></td>
             </tr>
 
-        </table>
-        <button>Submit</button>
-    </form>
+    <h1>REGISTER AS DONOR</h1>
+
+
+    <table>
+
+        <tr>
+            <td>Restaurant Name:</td>
+            <td><input type="text" id="restaurant_name" required></td>
+        </tr>
+
+        <tr>
+            <td>Owner Name:</td>
+            <td><input type="text" id="owner_name" required></td>
+        </tr>
+
+        <tr>
+            <td>Email:</td>
+            <td><input type="email" id="email" required></td>
+        </tr>
+
+        <tr>
+            <td>Phone:</td>
+            <td><input type="text" id="phone" required></td>
+        </tr>
+
+        <tr>
+            <td>Address:</td>
+            <td><input type="text" id="address" required></td>
+        </tr>
+
+        <tr>
+            <td>City:</td>
+            <td><input type="text" id="city" required></td>
+        </tr>
+
+        <tr>
+            <td>Password:</td>
+            <td><input type="password" id="password" required></td>
+        </tr>
+
+        <tr>
+            <td>Confirm Password:</td>
+            <td><input type="password" id="confirm_password" required></td>
+        </tr>
+
+        <tr>
+            <td>Location:</td>
+            <td><input type="text" id="location" required></td>
+        </tr>
+
+    </table>
+
+    <button type="submit">Register</button>
+
+</form>
+
+<script src="js/donor_registration.js"></script>
 </body>
 
 </html>
