@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage NGOs | HungerFree</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+
+    <header class="header">
+
+        <h1>HungerFree Admin Panel</h1>
+
+        <nav>
+
+            <a href="admin_dashboard.html">Dashboard</a>
+            <a href="manage_users.html">Users</a>
+            <a href="manage_donors.html">Donors</a>
+            <a href="manage_ngos.html">NGOs</a>
+            <a href="manage_donations.html">Donations</a>
+            <a href="reports.html">Reports</a>
+            <a href="notifications.html">Notifications</a>
+            <a href="feedback.html">Feedback</a>
+            <a href="profile.html">Profile</a>
+
+        </nav>
+
+    </header>
+
+    <!-- Title -->
+
+    <section class="welcome">
+
+        <h2>Manage NGOs</h2>
+
+        <p>
+            View, approve, update and manage all registered NGOs.
+        </p>
+
+    </section>
+
+    <!-- Search -->
+
+    <section class="search-box">
+
+        <input type="text" placeholder="Search NGO">
+
+        <select>
+            <option>All Cities</option>
+            <option>Rajkot</option>
+            <option>Ahmedabad</option>
+            <option>Surat</option>
+            <option>Vadodara</option>
+        </select>
+
+        <select>
+            <option>All Status</option>
+            <option>Approved</option>
+            <option>Pending</option>
+            <option>Rejected</option>
+        </select>
+
+        <button>Search</button>
+
+    </section>
+
+    <!-- NGO Table -->
+
+    <section class="table-section">
+
+        <table>
+
+            <tr>
+
+                <th>NGO ID</th>
+                <th>NGO Name</th>
+                <th>Representative</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>City</th>
+                <th>Status</th>
+                <th>Action</th>
+
+            </tr>
+
+            <tr>
+
+                <td>N101</td>
+                <td>Helping Hands</td>
+                <td>Ramesh Patel</td>
+                <td>help@gmail.com</td>
+                <td>9876543210</td>
+                <td>Rajkot</td>
+                <td>Approved</td>
+
+                <td>
+
+                    <button>View</button>
+                    <button>Edit</button>
+                    <button>Delete</button>
+
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td>N102</td>
+                <td>Smile Foundation</td>
+                <td>Neha Shah</td>
+                <td>smile@gmail.com</td>
+                <td>9898989898</td>
+                <td>Ahmedabad</td>
+                <td>Pending</td>
+
+                <td>
+
+                    <button>Approve</button>
+                    <button>Reject</button>
+                    <button>Delete</button>
+
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td>N103</td>
+                <td>Food Care Trust</td>
+                <td>Amit Joshi</td>
+                <td>foodcare@gmail.com</td>
+                <td>9877412589</td>
+                <td>Surat</td>
+                <td>Approved</td>
+
+                <td>
+
+                    <button>View</button>
+                    <button>Edit</button>
+                    <button>Delete</button>
+
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td>N104</td>
+                <td>Hope Mission</td>
+                <td>Priya Mehta</td>
+                <td>hope@gmail.com</td>
+                <td>9871234567</td>
+                <td>Vadodara</td>
+                <td>Rejected</td>
+
+                <td>
+
+                    <button>View</button>
+                    <button>Edit</button>
+                    <button>Delete</button>
+
+                </td>
+
+            </tr>
+
+        </table>
+
+    </section>
+
+    <!-- Summary Cards -->
+
+    <section class="card-container">
+
+        <div class="card">
+            <h2>95</h2>
+            <p>Total NGOs</p>
+        </div>
+
+        <div class="card">
+            <h2>80</h2>
+            <p>Approved</p>
+        </div>
+
+        <div class="card">
+            <h2>10</h2>
+            <p>Pending</p>
+        </div>
+
+        <div class="card">
+            <h2>5</h2>
+            <p>Rejected</p>
+        </div>
+
+    </section>
+
+    <!-- Footer -->
+
+    <footer>
+
+        <p>
+            © 2026 HungerFree | Food Donation Management System
+        </p>
+
+    </footer>
+
+</body>
+
+</html>

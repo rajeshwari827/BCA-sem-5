@@ -9,34 +9,64 @@
 </head>
 
 <body>
-    <form>
-        <table>
+
+    <div class="page">
+
+        <div class="navbar2">
+            <a href="index.html" class="nav-btn">Home Page</a>
+            <a href="donor_registration.html" class="nav-btn">Food Donor</a>
+            <a href="ngo_registration.html" class="nav-btn">Food Receiver</a>
+        </div>
+
+        <div class="login-box">
+
             <h1>LOGIN FOR EXISTING USERS</h1>
 
-            <tr>
-                <td>Admin ID: <input type="text" id="adminid" name="adminid" placeholder="Enter Admin ID" required>
-                </td>
-            </tr>
-            <tr>
-                <td>User Name: <input type="text" id="username" name="username" placeholder="Enter Username" required>
-                </td>
-            </tr>
-            <tr>
-                <td>Password: <input type="text" id="password" name="password" placeholder="Enter Password" required>
-                </td>
-            </tr>
-            <tr>
-                <td>Email: <input type="email" id="Email:" name="Email:" placeholder="Enter Email ID" required></td>
-            </tr>
-        </table>
+            <form>
 
-        <h4>Not a user ? Then register yourself first according to <a href="donor_registration.html">Food
-                Donor</a>
-            and <a href="ngo_registration.html">Food Reciver</a> </h4>
-        <button>Submit</button>
-    </form>
+                <table>
 
+                    <tr>
+                        <td>Admin ID<input type="text" placeholder="Enter Admin ID"></td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            User Name
+                            <input type="text" placeholder="Enter Username">
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            Password
+                            <input type="password" placeholder="Enter Password">
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            Email
+                            <input type="email" placeholder="Enter Email ID">
+                        </td>
+                    </tr>
+
+                </table>
+
+                <h4>
+                    Not a user?
+                    Register as
+                    <a href="donor_registration.html">Food Donor</a>
+                    or
+                    <a href="ngo_registration.html">Food Receiver</a>
+                </h4>
+
+                <button type="submit">Submit</button>
+
+            </form>
+
+        </div>
+
+    </div>
 
 </body>
-
-</html>

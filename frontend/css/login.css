@@ -4,29 +4,46 @@
 
 body {
     margin: 0;
-    padding: 30px;
-    background: url("../Images/bg-login.png") center center/cover no-repeat;
+    min-height: 100vh;
+    background: url("../images/bg-login.png") no-repeat center;
+    background-size: cover;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-    overflow-y: auto;
+    align-items: center;
 }
 
-.bg-login {
+.navbar2 {
+    display: flex;
+    gap: 80px;
+    margin-bottom: 30px;
+}
+
+.nav-btn {
+    text-align: center;
+    text-decoration: none;
+    /* Remove underline (optional) */
+    color: black;
+    /* Text color */
+    font-size: 21px;
+    padding: 5px 10px;
+}
+
+
+/*.bg-login {
 
     background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
     background-size: cover;
     background-position: center;
 
-}
+}*/
 
 .page {
+    width: 100%;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
-    /*min-height: 100vh;*/
+    align-items: center;
 }
 
 .logo {
@@ -35,19 +52,17 @@ body {
 }
 
 .login-box {
-    width: 500px;
-    background: #fff;
-    border-radius: 15px;
-    padding: 30px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, .2);
-    margin: 30px 0;
+    width: 480px;
+    padding: 35px;
+    background: #fff7ea;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .2);
 }
 
-h1 {
+.login-box h1 {
     text-align: center;
-    font-family: 'Times New Roman', Times, serif;
-    text-decoration: double;
-    font-weight: 1000;
+    font-size: 52px;
+    margin-bottom: 30px;
 
 }
 
@@ -65,23 +80,19 @@ h4 {
 
 table {
     width: 100%;
-    display: flex;
+    /*display: flex;
     justify-content: center;
+    align-items: center;*/
 }
 
 form {
-    width: 480px;
-
-    padding: 15px 15px;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-
-    margin: auto;
+    background: none;
+    box-shadow: none;
+    padding: 0;
 }
 
 
@@ -127,8 +138,8 @@ td input:focus {
 }
 
 button {
-    width: 450px;
-    height: 50px;
+    width: 180px;
+    margin-top: 20px;
     border: none;
     border-radius: 10px;
     font-size: 22px;

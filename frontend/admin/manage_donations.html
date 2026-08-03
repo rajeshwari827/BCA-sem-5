@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Donations | HungerFree</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+
+    <header class="header">
+
+        <h1>HungerFree Admin Panel</h1>
+
+        <nav>
+            <a href="admin_dashboard.html">Dashboard</a>
+            <a href="manage_users.html">Users</a>
+            <a href="manage_donors.html">Donors</a>
+            <a href="manage_ngos.html">NGOs</a>
+            <a href="manage_donations.html">Donations</a>
+            <a href="reports.html">Reports</a>
+            <a href="notifications.html">Notifications</a>
+            <a href="feedback.html">Feedback</a>
+            <a href="profile.html">Profile</a>
+        </nav>
+
+    </header>
+
+    <!-- Page Title -->
+
+    <section class="welcome">
+
+        <h2>Manage Food Donations</h2>
+
+        <p>
+            View, approve, reject and monitor all food donations submitted by donors.
+        </p>
+
+    </section>
+
+    <!-- Search Section -->
+
+    <section class="search-box">
+
+        <input type="text" placeholder="Search Donation">
+
+        <select>
+            <option>All Status</option>
+            <option>Pending</option>
+            <option>Accepted</option>
+            <option>Picked Up</option>
+            <option>Rejected</option>
+        </select>
+
+        <button>Search</button>
+
+    </section>
+
+    <!-- Donation Table -->
+
+    <section class="table-section">
+
+        <table>
+
+            <tr>
+
+                <th>Donation ID</th>
+                <th>Donor</th>
+                <th>Food Name</th>
+                <th>Category</th>
+                <th>Quantity</th>
+                <th>City</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Action</th>
+
+            </tr>
+
+            <tr>
+
+                <td>D001</td>
+                <td>ABC Restaurant</td>
+                <td>Rice</td>
+                <td>Veg</td>
+                <td>20 kg</td>
+                <td>Rajkot</td>
+                <td>01-Aug-2026</td>
+                <td>Pending</td>
+
+                <td>
+                    <button>View</button>
+                    <button>Accept</button>
+                    <button>Reject</button>
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td>D002</td>
+                <td>Royal Kitchen</td>
+                <td>Bread</td>
+                <td>Bakery</td>
+                <td>50 pcs</td>
+                <td>Ahmedabad</td>
+                <td>31-Jul-2026</td>
+                <td>Accepted</td>
+
+                <td>
+                    <button>View</button>
+                    <button>Picked Up</button>
+                    <button>Delete</button>
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td>D003</td>
+                <td>Food Paradise</td>
+                <td>Vegetables</td>
+                <td>Veg</td>
+                <td>15 kg</td>
+                <td>Surat</td>
+                <td>30-Jul-2026</td>
+                <td>Picked Up</td>
+
+                <td>
+                    <button>View</button>
+                    <button>Delete</button>
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td>D004</td>
+                <td>Fresh Meals</td>
+                <td>Milk</td>
+                <td>Beverages</td>
+                <td>30 Litre</td>
+                <td>Vadodara</td>
+                <td>29-Jul-2026</td>
+                <td>Rejected</td>
+
+                <td>
+                    <button>View</button>
+                    <button>Delete</button>
+                </td>
+
+            </tr>
+
+        </table>
+
+    </section>
+
+    <!-- Summary Cards -->
+
+    <section class="card-container">
+
+        <div class="card">
+            <h2>410</h2>
+            <p>Total Donations</p>
+        </div>
+
+        <div class="card">
+            <h2>290</h2>
+            <p>Accepted</p>
+        </div>
+
+        <div class="card">
+            <h2>75</h2>
+            <p>Pending</p>
+        </div>
+
+        <div class="card">
+            <h2>35</h2>
+            <p>Rejected</p>
+        </div>
+
+        <div class="card">
+            <h2>10</h2>
+            <p>Picked Up Today</p>
+        </div>
+
+    </section>
+
+    <!-- Footer -->
+
+    <footer>
+
+        <p>
+            © 2026 HungerFree | Food Donation Management System
+        </p>
+
+    </footer>
+
+</body>
+
+</html>

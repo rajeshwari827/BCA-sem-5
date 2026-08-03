@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Donors | HungerFree</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+
+    <header class="header">
+
+        <h1>HungerFree Admin Panel</h1>
+
+        <nav>
+
+            <a href="admin_dashboard.html">Dashboard</a>
+            <a href="manage_users.html">Users</a>
+            <a href="manage_donors.html">Donors</a>
+            <a href="manage_ngos.html">NGOs</a>
+            <a href="manage_donations.html">Donations</a>
+            <a href="reports.html">Reports</a>
+            <a href="notifications.html">Notifications</a>
+            <a href="feedback.html">Feedback</a>
+            <a href="profile.html">Profile</a>
+
+        </nav>
+
+    </header>
+
+    <!-- Title -->
+
+    <section class="welcome">
+
+        <h2>Manage Food Donors</h2>
+
+        <p>
+            View, approve, update and manage all registered food donors.
+        </p>
+
+    </section>
+
+    <!-- Search -->
+
+    <section class="search-box">
+
+        <input type="text" placeholder="Search Donor">
+
+        <select>
+            <option>All Cities</option>
+            <option>Rajkot</option>
+            <option>Ahmedabad</option>
+            <option>Surat</option>
+            <option>Vadodara</option>
+        </select>
+
+        <select>
+            <option>All Status</option>
+            <option>Approved</option>
+            <option>Pending</option>
+            <option>Rejected</option>
+        </select>
+
+        <button>Search</button>
+
+    </section>
+
+    <!-- Donor Table -->
+
+    <section class="table-section">
+
+        <table>
+
+            <tr>
+                <th>Donor ID</th>
+                <th>Restaurant Name</th>
+                <th>Owner Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>City</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+
+            <tr>
+                <td>D101</td>
+                <td>ABC Restaurant</td>
+                <td>Rahul Patel</td>
+                <td>abc@gmail.com</td>
+                <td>9876543210</td>
+                <td>Rajkot</td>
+                <td>Approved</td>
+                <td>
+                    <button>View</button>
+                    <button>Edit</button>
+                    <button>Delete</button>
+                </td>
+            </tr>
+
+            <tr>
+                <td>D102</td>
+                <td>Food Corner</td>
+                <td>Neha Shah</td>
+                <td>food@gmail.com</td>
+                <td>9876543201</td>
+                <td>Ahmedabad</td>
+                <td>Pending</td>
+                <td>
+                    <button>Approve</button>
+                    <button>Reject</button>
+                    <button>Delete</button>
+                </td>
+            </tr>
+
+            <tr>
+                <td>D103</td>
+                <td>Royal Kitchen</td>
+                <td>Amit Joshi</td>
+                <td>royal@gmail.com</td>
+                <td>9898989898</td>
+                <td>Surat</td>
+                <td>Approved</td>
+                <td>
+                    <button>View</button>
+                    <button>Edit</button>
+                    <button>Delete</button>
+                </td>
+            </tr>
+
+            <tr>
+                <td>D104</td>
+                <td>Fresh Meals</td>
+                <td>Priya Mehta</td>
+                <td>fresh@gmail.com</td>
+                <td>9877412589</td>
+                <td>Vadodara</td>
+                <td>Rejected</td>
+                <td>
+                    <button>View</button>
+                    <button>Edit</button>
+                    <button>Delete</button>
+                </td>
+            </tr>
+
+        </table>
+
+    </section>
+
+    <!-- Summary -->
+
+    <section class="card-container">
+
+        <div class="card">
+            <h2>140</h2>
+            <p>Total Donors</p>
+        </div>
+
+        <div class="card">
+            <h2>118</h2>
+            <p>Approved</p>
+        </div>
+
+        <div class="card">
+            <h2>15</h2>
+            <p>Pending</p>
+        </div>
+
+        <div class="card">
+            <h2>7</h2>
+            <p>Rejected</p>
+        </div>
+
+    </section>
+
+    <!-- Footer -->
+
+    <footer>
+
+        <p>
+            © 2026 HungerFree Food Donation Management System
+        </p>
+
+    </footer>
+
+</body>
+
+</html>
