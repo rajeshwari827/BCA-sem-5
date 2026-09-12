@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login for existing user</title>
     <link rel="stylesheet" href="css/login.css">
-
+    <script src="js/login.js"></script>
 </head>
 
 <body>
@@ -21,89 +21,39 @@
         </div>
 
         <div class="login-box">
-
-            <h1>LOGIN FOR EXISTING USERS</h1>
-
             <form>
-
                 <table>
-
-                    <tr>
-                        <td>Admin ID<input type="text" placeholder="Enter Admin ID"></td>
-                    </tr>
-
-                    <form id="loginForm">
-                        <table>
-                            <h1>LOGIN FOR EXISTING USERS</h1>
-
-                            <tr>
-                                <td>
-                                    <input type="text" id="userid" name="userid"
-                                        placeholder="Enter User ID (DN001 / RN001)" required>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>User Name: <input type="text" id="username" name="username"
-                                        placeholder="Enter Username" required>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Password: <input type="text" id="password" name="password"
-                                        placeholder="Enter Password" required>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Email: <input type="email" id="Email:" name="Email:" placeholder="Enter Email ID"
-                                        required></td>
-                            </tr>
-                        </table>
-
-                        <h4>Not a user ? Then register yourself first according to <a
-                                href="donor_registration.html">Food
-                                Donor</a>
-                            and <a href="ngo_registration.html">Food Reciver</a> </h4>
-                        <button>Submit</button>
-                    </form>
-                    <script src="js/login.js"></script>
-
+                    <h1>LOGIN FOR EXISTING USERS</h1>
 
                     <tr>
                         <td>
-                            User Name
-                            <input type="text" placeholder="Enter Username">
+                            <input type="text" id="userid" name="userid" placeholder="Enter User ID (DN001 / RN001)"
+                                required>
                         </td>
                     </tr>
-
                     <tr>
-                        <td>
-                            Password
-                            <input type="password" placeholder="Enter Password">
+                        <td>User Name: <input type="text" id="username" name="username" placeholder="Enter Username"
+                                required>
                         </td>
                     </tr>
-
                     <tr>
-                        <td>
-                            Email
-                            <input type="email" placeholder="Enter Email ID">
+                        <td>Password: <input type="text" id="password" name="password" placeholder="Enter Password"
+                                required>
                         </td>
                     </tr>
-
+                    <tr>
+                        <td>Email: <input type="email" id="Email:" name="Email:" placeholder="Enter Email ID" required>
+                        </td>
+                    </tr>
                 </table>
 
-                <h4>
-                    Not a user?
-                    Register as
-                    <a href="donor_registration.html">Food Donor</a>
-                    or
-                    <a href="ngo_registration.html">Food Receiver</a>
-                </h4>
-
-                <button type="submit">Submit</button>
-
+                <h4>Not a user ? Then register yourself first according to <a href="donor_registration.html">Food
+                        Donor</a>
+                    and <a href="ngo_registration.html">Food Reciver</a> </h4>
+                <button>Submit</button>
             </form>
-
         </div>
-
     </div>
-
 </body>
+
+</html>
