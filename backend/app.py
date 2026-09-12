@@ -6,7 +6,7 @@ from db import get_connection
 HOST = "localhost"
 PORT = 8000
 
-# Serve files from the frontend folder
+# Frontend folder
 FRONTEND_DIR = os.path.join(
     os.path.dirname(__file__),
     "..",
@@ -18,159 +18,307 @@ os.chdir(FRONTEND_DIR)
 
 class FoodDonationServer(SimpleHTTPRequestHandler):
 
+    # =========================================
+    # SEND JSON RESPONSE
+    # =========================================
+
+    def send_json(self, data, status=200):
+
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.end_headers()
+
+        self.wfile.write(
+            json.dumps(data).encode()
+        )
+
+    # =========================================
+    # POST REQUEST
+    # =========================================
+
     def do_POST(self):
 
-        print("POST Request Received")
+        print("\nPOST Request Received")
         print("Path:", self.path)
 
-        # ============================
-        # LOGIN API
-        # ============================
-        if self.path == "/api/login":
+        # =====================================
+        # DONOR REGISTRATION
+        # =====================================
 
-            content_length = int(self.headers["Content-Length"])
-            body = self.rfile.read(content_length)
-            data = json.loads(body)
+        if self.path == "/api/donor/register":
 
-            print("Received Data:", data)
+            try:
 
-            conn = get_connection()
-            cursor = conn.cursor(dictionary=True)
-
-            user_id = data["userid"]
-            password = data["password"]
-
-            if user_id.startswith("DN"):
-
-                cursor.execute(
-                    "SELECT * FROM donor WHERE donor_id=%s AND password=%s",
-                    (user_id, password)
+                content_length = int(
+                    self.headers.get("Content-Length", 0)
                 )
 
-            elif user_id.startswith("RN"):
+                body = self.rfile.read(content_length)
 
-                cursor.execute(
-                    "SELECT * FROM ngos WHERE ngo_id=%s AND password=%s",
-                    (user_id, password)
-                )
+                data = json.loads(body)
 
-            else:
+                print("Donor Data Received:")
+                print(data)
 
-                self.send_response(400)
-                self.send_header("Content-Type", "application/json")
-                self.end_headers()
+                # -----------------------------
+                # Validate required fields
+                # -----------------------------
 
-                self.wfile.write(json.dumps({
-                    "success": False,
-                    "message": "Invalid User ID"
-                }).encode())
+                required_fields = [
+                    "restaurant_name",
+                    "owner_name",
+                    "email",
+                    "phone",
+                    "address",
+                    "city",
+                    "password",
+                    "confirm_password",
+                    "location"
+                ]
 
-                return
+                for field in required_fields:
 
-            user = cursor.fetchone()
+                    if not data.get(field):
 
-            cursor.close()
-            conn.close()
+                        self.send_json({
+                            "success": False,
+                            "message": f"{field} is required"
+                        }, 400)
 
-            if user:
-                response = {
-                    "success": True,
-                    "message": "Login Successful"
-                }
-            else:
-                response = {
-                    "success": False,
-                    "message": "Invalid User ID or Password"
-                }
+                        return
 
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
-            self.wfile.write(json.dumps(response).encode())
+                # -----------------------------
+                # Check password
+                # -----------------------------
 
-        # ============================
-        # DONOR REGISTRATION API
-        # ============================
-        elif self.path == "/api/donor/register":
+                if data["password"] != data["confirm_password"]:
 
-            content_length = int(self.headers["Content-Length"])
-            body = self.rfile.read(content_length)
-            data = json.loads(body)
+                    self.send_json({
+                        "success": False,
+                        "message": "Passwords do not match"
+                    }, 400)
 
-            conn = get_connection()
-            cursor = conn.cursor(dictionary=True)
+                    return
 
-            # Generate Donor ID
-            cursor.execute("""
-                SELECT donor_id
-                FROM donor
-                ORDER BY donor_id DESC
-                LIMIT 1
-            """)
+                # -----------------------------
+                # Database connection
+                # -----------------------------
 
-            last = cursor.fetchone()
+                conn = get_connection()
 
-            if last is None:
-                donor_id = "DN001"
-            else:
-                number = int(last["donor_id"][2:])
-                donor_id = f"DN{number + 1:03d}"
+                cursor = conn.cursor(dictionary=True)
 
-            # Insert Donor
-            cursor.execute("""
-                INSERT INTO donor
-                (
+                # -----------------------------
+                # Generate Donor ID
+                # -----------------------------
+
+                cursor.execute("""
+                    SELECT donor_id
+                    FROM donor
+                    ORDER BY donor_id DESC
+                    LIMIT 1
+                """)
+
+                last = cursor.fetchone()
+
+                if last is None:
+
+                    donor_id = "DN001"
+
+                else:
+
+                    number = int(last["donor_id"][2:])
+
+                    donor_id = f"DN{number + 1:03d}"
+
+                # -----------------------------
+                # Insert donor
+                # -----------------------------
+
+                query = """
+                    INSERT INTO donor
+                    (
+                        donor_id,
+                        resturaent_name,
+                        owner_name,
+                        email,
+                        phone,
+                        address,
+                        city,
+                        password,
+                        confirm_password,
+                        location
+                    )
+                    VALUES
+                    (
+                        %s, %s, %s, %s, %s,
+                        %s, %s, %s, %s, %s
+                    )
+                """
+
+                values = (
                     donor_id,
-                    resturaent_name,
-                    owner_name,
-                    email,
-                    phone,
-                    address,
-                    city,
-                    password,
-                    confirm_password,
-                    location
+                    data["restaurant_name"],
+                    data["owner_name"],
+                    data["email"],
+                    data["phone"],
+                    data["address"],
+                    data["city"],
+                    data["password"],
+                    data["confirm_password"],
+                    data["location"]
                 )
-                VALUES
-                (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-            """,
-            (
-                donor_id,
-                data["restaurant_name"],
-                data["owner_name"],
-                data["email"],
-                data["phone"],
-                data["address"],
-                data["city"],
-                data["password"],
-                data["confirm_password"],
-                data["location"]
-            ))
 
-            conn.commit()
+                cursor.execute(query, values)
 
-            cursor.close()
-            conn.close()
+                conn.commit()
 
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
+                cursor.close()
+                conn.close()
 
-            self.wfile.write(json.dumps({
-                "success": True,
-                "message": "Registration Successful",
-                "donor_id": donor_id
-            }).encode())
+                print("Donor Registered Successfully:", donor_id)
 
-        # ============================
+                # -----------------------------
+                # Send success response
+                # -----------------------------
+
+                self.send_json({
+                    "success": True,
+                    "message": "Donor Registration Successful",
+                    "donor_id": donor_id
+                })
+
+            except Exception as e:
+
+                print("DATABASE ERROR:", e)
+
+                self.send_json({
+                    "success": False,
+                    "message": "Database error: " + str(e)
+                }, 500)
+
+            return
+
+        # =====================================
+        # LOGIN
+        # =====================================
+
+        elif self.path == "/api/login":
+
+            try:
+
+                content_length = int(
+                    self.headers.get("Content-Length", 0)
+                )
+
+                body = self.rfile.read(content_length)
+
+                data = json.loads(body)
+
+                user_id = data.get("userid")
+                password = data.get("password")
+
+                conn = get_connection()
+
+                cursor = conn.cursor(dictionary=True)
+
+                # -----------------------------
+                # DONOR LOGIN
+                # -----------------------------
+
+                if user_id.startswith("DN"):
+
+                    cursor.execute(
+                        """
+                        SELECT *
+                        FROM donor
+                        WHERE donor_id = %s
+                        AND password = %s
+                        """,
+                        (user_id, password)
+                    )
+
+                # -----------------------------
+                # NGO LOGIN
+                # -----------------------------
+
+                elif user_id.startswith("RN"):
+
+                    cursor.execute(
+                        """
+                        SELECT *
+                        FROM ngos
+                        WHERE ngo_id = %s
+                        AND password = %s
+                        """,
+                        (user_id, password)
+                    )
+
+                else:
+
+                    cursor.close()
+                    conn.close()
+
+                    self.send_json({
+                        "success": False,
+                        "message": "Invalid User ID"
+                    }, 400)
+
+                    return
+
+                user = cursor.fetchone()
+
+                cursor.close()
+                conn.close()
+
+                if user:
+
+                    self.send_json({
+                        "success": True,
+                        "message": "Login Successful"
+                    })
+
+                else:
+
+                    self.send_json({
+                        "success": False,
+                        "message": "Invalid User ID or Password"
+                    }, 401)
+
+            except Exception as e:
+
+                print("LOGIN ERROR:", e)
+
+                self.send_json({
+                    "success": False,
+                    "message": str(e)
+                }, 500)
+
+            return
+
+        # =====================================
         # INVALID API
-        # ============================
+        # =====================================
+
         else:
-            self.send_error(404, "API Not Found")
+
+            self.send_error(
+                404,
+                "API Not Found"
+            )
 
 
-print(f"Serving frontend from: {FRONTEND_DIR}")
-print(f"Server running at http://{HOST}:{PORT}")
+print("---------------------------------------")
+print("HungerFree Food Donation System")
+print("---------------------------------------")
+print("Frontend:", FRONTEND_DIR)
+print("Server: http://localhost:8000")
+print("---------------------------------------")
 
-server = ThreadingHTTPServer((HOST, PORT), FoodDonationServer)
+server = ThreadingHTTPServer(
+    (HOST, PORT),
+    FoodDonationServer
+)
+
 server.serve_forever()
