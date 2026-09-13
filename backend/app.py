@@ -1,71 +1,443 @@
 import os
 import json
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
+from urllib.parse import urlparse, parse_qs
+
 from db import get_connection
+
 
 HOST = "localhost"
 PORT = 8000
 
-# Frontend folder
-FRONTEND_DIR = os.path.join(
-    os.path.dirname(__file__),
-    "..",
-    "frontend"
-)
+
+# =========================================================
+# FRONTEND DIRECTORY
+# =========================================================
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FRONTEND_DIR = os.path.join(BASE_DIR, "..", "frontend")
 
 os.chdir(FRONTEND_DIR)
 
 
+# =========================================================
+# SERVER CLASS
+# =========================================================
+
 class FoodDonationServer(SimpleHTTPRequestHandler):
 
-    # =========================================
+
+    # =====================================================
     # SEND JSON RESPONSE
-    # =========================================
+    # =====================================================
 
     def send_json(self, data, status=200):
 
-        self.send_response(status)
-        self.send_header("Content-Type", "application/json")
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.end_headers()
+        response = json.dumps(
+            data,
+            default=str
+        ).encode("utf-8")
 
-        self.wfile.write(
-            json.dumps(data).encode()
+        self.send_response(status)
+
+        self.send_header(
+            "Content-Type",
+            "application/json"
         )
 
-    # =========================================
-    # POST REQUEST
-    # =========================================
+        self.send_header(
+            "Content-Length",
+            str(len(response))
+        )
+
+        self.send_header(
+            "Access-Control-Allow-Origin",
+            "*"
+        )
+
+        self.end_headers()
+
+        self.wfile.write(response)
+
+
+    # =====================================================
+    # GET REQUESTS
+    # =====================================================
+
+    def do_GET(self):
+
+
+        # =================================================
+        # DONOR DASHBOARD
+        # =================================================
+
+        if self.path.startswith("/api/donor/dashboard"):
+
+            try:
+
+                parsed_url = urlparse(self.path)
+
+                query = parse_qs(
+                    parsed_url.query
+                )
+
+                donor_id = query.get(
+                    "donor_id",
+                    [None]
+                )[0]
+
+
+                if not donor_id:
+
+                    self.send_json({
+                        "success": False,
+                        "message": "Donor ID is required"
+                    }, 400)
+
+                    return
+
+
+                donor_id = donor_id.strip().upper()
+
+
+                conn = get_connection()
+
+                cursor = conn.cursor(
+                    dictionary=True
+                )
+
+
+                # =========================================
+                # GET DONOR
+                # =========================================
+
+                cursor.execute("""
+                    SELECT
+                        donor_id,
+                        resturaent_name
+                    FROM donor
+                    WHERE donor_id = %s
+                """, (donor_id,))
+
+
+                donor = cursor.fetchone()
+
+
+                if not donor:
+
+                    cursor.close()
+                    conn.close()
+
+                    self.send_json({
+                        "success": False,
+                        "message": "Donor not found"
+                    }, 404)
+
+                    return
+
+
+                # =========================================
+                # TOTAL DONATIONS
+                # =========================================
+
+                cursor.execute("""
+                    SELECT COUNT(*) AS total
+                    FROM donation
+                    WHERE donor_id = %s
+                """, (donor_id,))
+
+
+                total = cursor.fetchone()["total"]
+
+
+                # =========================================
+                # TODAY'S DONATIONS
+                # =========================================
+
+                cursor.execute("""
+                    SELECT COUNT(*) AS today
+                    FROM donation
+                    WHERE donor_id = %s
+                    AND DATE(created_at) = CURDATE()
+                """, (donor_id,))
+
+
+                today = cursor.fetchone()["today"]
+
+
+                # =========================================
+                # ACCEPTED DONATIONS
+                # =========================================
+
+                cursor.execute("""
+                    SELECT COUNT(*) AS accepted
+                    FROM donation
+                    WHERE donor_id = %s
+                    AND LOWER(status) = 'accepted'
+                """, (donor_id,))
+
+
+                accepted = cursor.fetchone()["accepted"]
+
+
+                # =========================================
+                # PENDING DONATIONS
+                # =========================================
+
+                cursor.execute("""
+                    SELECT COUNT(*) AS pending
+                    FROM donation
+                    WHERE donor_id = %s
+                    AND LOWER(status) = 'pending'
+                """, (donor_id,))
+
+
+                pending = cursor.fetchone()["pending"]
+
+
+                # =========================================
+                # LATEST DONATIONS
+                # =========================================
+
+                cursor.execute("""
+                    SELECT
+                        donation_id,
+                        food_name,
+                        quantity,
+                        description,
+                        pickup_time,
+                        status,
+                        created_at
+                    FROM donation
+                    WHERE donor_id = %s
+                    ORDER BY created_at DESC
+                    LIMIT 5
+                """, (donor_id,))
+
+
+                donations = cursor.fetchall()
+
+
+                # =========================================
+                # CLOSE DATABASE
+                # =========================================
+
+                cursor.close()
+                conn.close()
+
+
+                # =========================================
+                # SEND DASHBOARD DATA
+                # =========================================
+
+                self.send_json({
+
+                    "success": True,
+
+                    "donor": donor,
+
+                    "stats": {
+
+                        "total": total,
+
+                        "today": today,
+
+                        "accepted": accepted,
+
+                        "pending": pending
+
+                    },
+
+                    "donations": donations
+
+                })
+
+
+            except Exception as e:
+
+                print(
+                    "DONOR DASHBOARD ERROR:",
+                    e
+                )
+
+                self.send_json({
+
+                    "success": False,
+
+                    "message": str(e)
+
+                }, 500)
+
+            return
+
+
+        # =================================================
+        # DONOR PROFILE
+        # =================================================
+
+        if self.path.startswith("/api/donor/profile"):
+
+            try:
+
+                parsed_url = urlparse(
+                    self.path
+                )
+
+                query = parse_qs(
+                    parsed_url.query
+                )
+
+                donor_id = query.get(
+                    "donor_id",
+                    [None]
+                )[0]
+
+
+                if not donor_id:
+
+                    self.send_json({
+                        "success": False,
+                        "message": "Donor ID is required"
+                    }, 400)
+
+                    return
+
+
+                donor_id = donor_id.strip().upper()
+
+
+                conn = get_connection()
+
+                cursor = conn.cursor(
+                    dictionary=True
+                )
+
+
+                cursor.execute("""
+                    SELECT
+                        donor_id,
+                        resturaent_name,
+                        owner_name,
+                        email,
+                        phone,
+                        address,
+                        city,
+                        location,
+                        created_at
+                    FROM donor
+                    WHERE donor_id = %s
+                """, (donor_id,))
+
+
+                donor = cursor.fetchone()
+
+
+                cursor.close()
+                conn.close()
+
+
+                if donor:
+
+                    self.send_json({
+
+                        "success": True,
+
+                        "donor": donor
+
+                    })
+
+                else:
+
+                    self.send_json({
+
+                        "success": False,
+
+                        "message": "Donor not found"
+
+                    }, 404)
+
+
+            except Exception as e:
+
+                print(
+                    "DONOR PROFILE ERROR:",
+                    e
+                )
+
+                self.send_json({
+
+                    "success": False,
+
+                    "message": str(e)
+
+                }, 500)
+
+            return
+
+
+        # =================================================
+        # NORMAL HTML / FILE REQUEST
+        # =================================================
+
+        return super().do_GET()
+
+
+    # =====================================================
+    # POST REQUESTS
+    # =====================================================
 
     def do_POST(self):
 
-        print("\nPOST Request Received")
-        print("Path:", self.path)
 
-        # =====================================
+        # =================================================
+        # READ REQUEST DATA
+        # =================================================
+
+        try:
+
+            content_length = int(
+                self.headers.get(
+                    "Content-Length",
+                    0
+                )
+            )
+
+
+            body = self.rfile.read(
+                content_length
+            )
+
+
+            data = json.loads(
+                body.decode("utf-8")
+            )
+
+
+        except Exception as e:
+
+            self.send_json({
+
+                "success": False,
+
+                "message":
+                    "Invalid request data: "
+                    + str(e)
+
+            }, 400)
+
+            return
+
+
+        # =================================================
         # DONOR REGISTRATION
-        # =====================================
+        # =================================================
 
         if self.path == "/api/donor/register":
 
             try:
 
-                content_length = int(
-                    self.headers.get("Content-Length", 0)
-                )
-
-                body = self.rfile.read(content_length)
-
-                data = json.loads(body)
-
-                print("Donor Data Received:")
-                print(data)
-
-                # -----------------------------
-                # Validate required fields
-                # -----------------------------
-
                 required_fields = [
+
                     "restaurant_name",
                     "owner_name",
                     "email",
@@ -75,43 +447,92 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                     "password",
                     "confirm_password",
                     "location"
+
                 ]
+
 
                 for field in required_fields:
 
                     if not data.get(field):
 
                         self.send_json({
+
                             "success": False,
-                            "message": f"{field} is required"
+
+                            "message":
+                                field.replace(
+                                    "_",
+                                    " "
+                                ).title()
+                                + " is required"
+
                         }, 400)
 
                         return
 
-                # -----------------------------
-                # Check password
-                # -----------------------------
 
-                if data["password"] != data["confirm_password"]:
+                # =========================================
+                # PASSWORD CHECK
+                # =========================================
+
+                if (
+                    data["password"]
+                    != data["confirm_password"]
+                ):
 
                     self.send_json({
+
                         "success": False,
-                        "message": "Passwords do not match"
+
+                        "message":
+                            "Passwords do not match"
+
                     }, 400)
 
                     return
 
-                # -----------------------------
-                # Database connection
-                # -----------------------------
 
                 conn = get_connection()
 
-                cursor = conn.cursor(dictionary=True)
+                cursor = conn.cursor(
+                    dictionary=True
+                )
 
-                # -----------------------------
-                # Generate Donor ID
-                # -----------------------------
+
+                # =========================================
+                # CHECK EMAIL
+                # =========================================
+
+                cursor.execute("""
+                    SELECT donor_id
+                    FROM donor
+                    WHERE email = %s
+                """, (data["email"],))
+
+
+                existing = cursor.fetchone()
+
+
+                if existing:
+
+                    cursor.close()
+                    conn.close()
+
+                    self.send_json({
+
+                        "success": False,
+
+                        "message":
+                            "Email already registered"
+
+                    }, 400)
+
+                    return
+
+
+                # =========================================
+                # GENERATE DONOR ID
+                # =========================================
 
                 cursor.execute("""
                     SELECT donor_id
@@ -120,23 +541,37 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                     LIMIT 1
                 """)
 
-                last = cursor.fetchone()
 
-                if last is None:
+                last_donor = cursor.fetchone()
 
-                    donor_id = "DN001"
+
+                if last_donor:
+
+                    try:
+
+                        last_number = int(
+                            last_donor["donor_id"][2:]
+                        )
+
+                    except:
+
+                        last_number = 0
 
                 else:
 
-                    number = int(last["donor_id"][2:])
+                    last_number = 0
 
-                    donor_id = f"DN{number + 1:03d}"
 
-                # -----------------------------
-                # Insert donor
-                # -----------------------------
+                donor_id = "DN{:03d}".format(
+                    last_number + 1
+                )
 
-                query = """
+
+                # =========================================
+                # INSERT DONOR
+                # =========================================
+
+                cursor.execute("""
                     INSERT INTO donor
                     (
                         donor_id,
@@ -152,173 +587,558 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                     )
                     VALUES
                     (
-                        %s, %s, %s, %s, %s,
-                        %s, %s, %s, %s, %s
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s
                     )
-                """
+                """, (
 
-                values = (
                     donor_id,
-                    data["restaurant_name"],
-                    data["owner_name"],
-                    data["email"],
-                    data["phone"],
-                    data["address"],
-                    data["city"],
-                    data["password"],
-                    data["confirm_password"],
-                    data["location"]
-                )
 
-                cursor.execute(query, values)
+                    data["restaurant_name"],
+
+                    data["owner_name"],
+
+                    data["email"],
+
+                    data["phone"],
+
+                    data["address"],
+
+                    data["city"],
+
+                    data["password"],
+
+                    data["confirm_password"],
+
+                    data["location"]
+
+                ))
+
 
                 conn.commit()
+
 
                 cursor.close()
                 conn.close()
 
-                print("Donor Registered Successfully:", donor_id)
-
-                # -----------------------------
-                # Send success response
-                # -----------------------------
 
                 self.send_json({
+
                     "success": True,
-                    "message": "Donor Registration Successful",
-                    "donor_id": donor_id
+
+                    "message":
+                        "Donor registration successful",
+
+                    "donor_id":
+                        donor_id
+
                 })
+
 
             except Exception as e:
 
-                print("DATABASE ERROR:", e)
+                print(
+                    "DONOR REGISTRATION ERROR:",
+                    e
+                )
 
                 self.send_json({
+
                     "success": False,
-                    "message": "Database error: " + str(e)
+
+                    "message": str(e)
+
                 }, 500)
 
             return
 
-        # =====================================
+
+        # =================================================
+        # RECEIVER REGISTRATION
+        # =================================================
+
+        elif self.path == "/api/receiver/register":
+
+            try:
+
+                required_fields = [
+
+                    "organization_name",
+                    "organization_type",
+                    "representative_name",
+                    "email",
+                    "phone",
+                    "address",
+                    "city",
+                    "password",
+                    "confirm_password",
+                    "location"
+
+                ]
+
+
+                for field in required_fields:
+
+                    if not data.get(field):
+
+                        self.send_json({
+
+                            "success": False,
+
+                            "message":
+                                field.replace(
+                                    "_",
+                                    " "
+                                ).title()
+                                + " is required"
+
+                        }, 400)
+
+                        return
+
+
+                # =========================================
+                # PASSWORD CHECK
+                # =========================================
+
+                if (
+                    data["password"]
+                    != data["confirm_password"]
+                ):
+
+                    self.send_json({
+
+                        "success": False,
+
+                        "message":
+                            "Passwords do not match"
+
+                    }, 400)
+
+                    return
+
+
+                conn = get_connection()
+
+                cursor = conn.cursor(
+                    dictionary=True
+                )
+
+
+                # =========================================
+                # CHECK EMAIL
+                # =========================================
+
+                cursor.execute("""
+                    SELECT ngo_id
+                    FROM ngos
+                    WHERE email = %s
+                """, (data["email"],))
+
+
+                existing = cursor.fetchone()
+
+
+                if existing:
+
+                    cursor.close()
+                    conn.close()
+
+                    self.send_json({
+
+                        "success": False,
+
+                        "message":
+                            "Email already registered"
+
+                    }, 400)
+
+                    return
+
+
+                # =========================================
+                # GENERATE RECEIVER ID
+                # =========================================
+
+                cursor.execute("""
+                    SELECT ngo_id
+                    FROM ngos
+                    ORDER BY ngo_id DESC
+                    LIMIT 1
+                """)
+
+
+                last_ngo = cursor.fetchone()
+
+
+                if last_ngo:
+
+                    try:
+
+                        last_number = int(
+                            last_ngo["ngo_id"][2:]
+                        )
+
+                    except:
+
+                        last_number = 0
+
+                else:
+
+                    last_number = 0
+
+
+                ngo_id = "RN{:03d}".format(
+                    last_number + 1
+                )
+
+
+                # =========================================
+                # INSERT RECEIVER
+                # =========================================
+
+                cursor.execute("""
+                    INSERT INTO ngos
+                    (
+                        ngo_id,
+                        organization_name,
+                        organization_type,
+                        representative_name,
+                        email,
+                        phone,
+                        address,
+                        city,
+                        password,
+                        confirm_password,
+                        location
+                    )
+                    VALUES
+                    (
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s
+                    )
+                """, (
+
+                    ngo_id,
+
+                    data["organization_name"],
+
+                    data["organization_type"],
+
+                    data["representative_name"],
+
+                    data["email"],
+
+                    data["phone"],
+
+                    data["address"],
+
+                    data["city"],
+
+                    data["password"],
+
+                    data["confirm_password"],
+
+                    data["location"]
+
+                ))
+
+
+                conn.commit()
+
+
+                cursor.close()
+                conn.close()
+
+
+                self.send_json({
+
+                    "success": True,
+
+                    "message":
+                        "Receiver registration successful",
+
+                    "ngo_id":
+                        ngo_id
+
+                })
+
+
+            except Exception as e:
+
+                print(
+                    "RECEIVER REGISTRATION ERROR:",
+                    e
+                )
+
+                self.send_json({
+
+                    "success": False,
+
+                    "message": str(e)
+
+                }, 500)
+
+            return
+
+
+        # =================================================
         # LOGIN
-        # =====================================
+        # =================================================
 
         elif self.path == "/api/login":
 
             try:
 
-                content_length = int(
-                    self.headers.get("Content-Length", 0)
+                userid = data.get(
+                    "userid"
                 )
 
-                body = self.rfile.read(content_length)
+                password = data.get(
+                    "password"
+                )
 
-                data = json.loads(body)
 
-                user_id = data.get("userid")
-                password = data.get("password")
+                if not userid or not password:
+
+                    self.send_json({
+
+                        "success": False,
+
+                        "message":
+                            "User ID and password are required"
+
+                    }, 400)
+
+                    return
+
+
+                userid = userid.strip().upper()
+
 
                 conn = get_connection()
 
-                cursor = conn.cursor(dictionary=True)
+                cursor = conn.cursor(
+                    dictionary=True
+                )
 
-                # -----------------------------
+
+                # =========================================
                 # DONOR LOGIN
-                # -----------------------------
+                # =========================================
 
-                if user_id.startswith("DN"):
+                if userid.startswith("DN"):
 
-                    cursor.execute(
-                        """
-                        SELECT *
+                    cursor.execute("""
+                        SELECT
+                            donor_id,
+                            resturaent_name,
+                            owner_name,
+                            email
                         FROM donor
                         WHERE donor_id = %s
                         AND password = %s
-                        """,
-                        (user_id, password)
-                    )
+                    """, (
+                        userid,
+                        password
+                    ))
 
-                # -----------------------------
-                # NGO LOGIN
-                # -----------------------------
 
-                elif user_id.startswith("RN"):
+                    user = cursor.fetchone()
 
-                    cursor.execute(
-                        """
-                        SELECT *
+
+                    cursor.close()
+                    conn.close()
+
+
+                    if user:
+
+                        self.send_json({
+
+                            "success": True,
+
+                            "message":
+                                "Login successful",
+
+                            "user": user,
+
+                            "dashboard":
+                                "/donor/donor_dashboard.html"
+
+                        })
+
+                    else:
+
+                        self.send_json({
+
+                            "success": False,
+
+                            "message":
+                                "Invalid donor ID or password"
+
+                        }, 401)
+
+
+                    return
+
+
+                # =========================================
+                # RECEIVER LOGIN
+                # =========================================
+
+                elif userid.startswith("RN"):
+
+                    cursor.execute("""
+                        SELECT
+                            ngo_id,
+                            organization_name,
+                            representative_name,
+                            email
                         FROM ngos
                         WHERE ngo_id = %s
                         AND password = %s
-                        """,
-                        (user_id, password)
-                    )
+                    """, (
+                        userid,
+                        password
+                    ))
+
+
+                    user = cursor.fetchone()
+
+
+                    cursor.close()
+                    conn.close()
+
+
+                    if user:
+
+                        self.send_json({
+
+                            "success": True,
+
+                            "message":
+                                "Login successful",
+
+                            "user": user,
+
+                            "dashboard":
+                                "/receiver/receiver_dashboard.html"
+
+                        })
+
+                    else:
+
+                        self.send_json({
+
+                            "success": False,
+
+                            "message":
+                                "Invalid receiver ID or password"
+
+                        }, 401)
+
+
+                    return
+
 
                 else:
 
                     cursor.close()
                     conn.close()
 
+
                     self.send_json({
+
                         "success": False,
-                        "message": "Invalid User ID"
+
+                        "message":
+                            "Invalid User ID. Use DN or RN ID."
+
                     }, 400)
 
                     return
 
-                user = cursor.fetchone()
-
-                cursor.close()
-                conn.close()
-
-                if user:
-
-                    self.send_json({
-                        "success": True,
-                        "message": "Login Successful"
-                    })
-
-                else:
-
-                    self.send_json({
-                        "success": False,
-                        "message": "Invalid User ID or Password"
-                    }, 401)
 
             except Exception as e:
 
-                print("LOGIN ERROR:", e)
+                print(
+                    "LOGIN ERROR:",
+                    e
+                )
 
                 self.send_json({
+
                     "success": False,
+
                     "message": str(e)
+
                 }, 500)
 
             return
 
-        # =====================================
-        # INVALID API
-        # =====================================
 
-        else:
+        # =================================================
+        # UNKNOWN API
+        # =================================================
 
-            self.send_error(
-                404,
-                "API Not Found"
-            )
+        self.send_json({
+
+            "success": False,
+
+            "message": "API endpoint not found"
+
+        }, 404)
 
 
-print("---------------------------------------")
-print("HungerFree Food Donation System")
-print("---------------------------------------")
-print("Frontend:", FRONTEND_DIR)
-print("Server: http://localhost:8000")
-print("---------------------------------------")
+# =========================================================
+# START SERVER
+# =========================================================
 
-server = ThreadingHTTPServer(
-    (HOST, PORT),
-    FoodDonationServer
-)
+if __name__ == "__main__":
 
-server.serve_forever()
+    server = ThreadingHTTPServer(
+        (HOST, PORT),
+        FoodDonationServer
+    )
+
+    print(
+        "HungerFree server running at:"
+    )
+
+    print(
+        "http://localhost:8000"
+    )
+
+    print(
+        "Press CTRL+C to stop the server."
+    )
+
+
+    try:
+
+        server.serve_forever()
+
+    except KeyboardInterrupt:
+
+        print(
+            "\nServer stopped."
+        )
+
+        server.server_close()

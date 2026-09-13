@@ -1,33 +1,129 @@
-document.getElementById("loginForm").addEventListener("submit", async function (e) {
+document.addEventListener("DOMContentLoaded", function () {
 
-    e.preventDefault();
+    const loginForm = document.getElementById("loginForm");
 
-    const data = {
+    if (!loginForm) {
+        console.error("Login form not found.");
+        return;
+    }
 
-        userid: document.getElementById("userid").value,
+    loginForm.addEventListener("submit", async function (e) {
 
-        username: document.getElementById("username").value,
+        e.preventDefault();
 
-        password: document.getElementById("password").value,
+        const useridInput = document.getElementById("userid");
+        const passwordInput = document.getElementById("password");
 
-        email: document.getElementById("Email:").value
+        const userid = useridInput.value.trim().toUpperCase();
+        const password = passwordInput.value.trim();
 
-    };
 
-    const response = await fetch("/api/login", {
+        // ==========================================
+        // VALIDATION
+        // ==========================================
 
-        method: "POST",
+        if (!userid || !password) {
 
-        headers: {
-            "Content-Type": "application/json"
-        },
+            alert("Please enter User ID and Password.");
 
-        body: JSON.stringify(data)
+            return;
+        }
+
+
+        try {
+
+            const response = await fetch("/api/login", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    userid: userid,
+                    password: password
+
+                })
+
+            });
+
+
+            const result = await response.json();
+
+
+            // ==========================================
+            // LOGIN FAILED
+            // ==========================================
+
+            if (!result.success) {
+
+                alert(
+                    result.message ||
+                    "Invalid User ID or Password."
+                );
+
+                return;
+            }
+
+
+            // ==========================================
+            // SAVE LOGIN ID
+            // ==========================================
+
+            localStorage.setItem(
+                "user_id",
+                userid
+            );
+
+
+            console.log(
+                "Logged in user:",
+                localStorage.getItem("user_id")
+            );
+
+
+            // ==========================================
+            // REDIRECT
+            // ==========================================
+
+            if (userid.startsWith("DN")) {
+
+                window.location.href =
+                    "/donor/donor_dashboard.html";
+
+            }
+
+            else if (userid.startsWith("RN")) {
+
+                window.location.href =
+                    "/receiver/receiver_dashboard.html";
+
+            }
+
+            else {
+
+                alert("Invalid User ID format.");
+
+            }
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Login Error:",
+                error
+            );
+
+            alert(
+                "Cannot connect to the server.\n\n" +
+                "Please make sure the Python backend is running."
+            );
+
+        }
 
     });
-
-    const result = await response.json();
-
-    alert(result.message);
 
 });

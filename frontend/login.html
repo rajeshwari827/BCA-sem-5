@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login for existing user</title>
     <link rel="stylesheet" href="css/login.css">
-    <script src="js/login.js"></script>
+
 </head>
 
 <body>
@@ -21,14 +21,14 @@
         </div>
 
         <div class="login-box">
-            <form>
+            <form id="loginForm">
                 <table>
                     <h1>LOGIN FOR EXISTING USERS</h1>
 
                     <tr>
                         <td>
-                            <input type="text" id="userid" name="userid" placeholder="Enter User ID (DN001 / RN001)"
-                                required>
+                            User ID:<input type="text" id="userid" placeholder="Enter User ID" required>
+
                         </td>
                     </tr>
                     <tr>
@@ -37,7 +37,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>Password: <input type="text" id="password" name="password" placeholder="Enter Password"
+                        <td>Password: <input type="password" id="password" name="password" placeholder="Enter Password"
                                 required>
                         </td>
                     </tr>
@@ -54,6 +54,108 @@
             </form>
         </div>
     </div>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", async function (e) {
+
+            e.preventDefault();
+
+            const userid = document.getElementById("userid").value.trim().toUpperCase();
+            const password = document.getElementById("password").value;
+
+            try {
+
+                const response = await fetch("/api/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        userid: userid,
+                        password: password
+                    })
+                });
+
+                const result = await response.json();
+
+                console.log("Login response:", result);
+
+                if (result.success) {
+
+                    // ==========================================
+                    // SAVE LOGGED-IN USER ID
+                    // ==========================================
+
+                    localStorage.setItem("user_id", userid);
+
+                    console.log(
+                        "Saved User ID:",
+                        localStorage.getItem("user_id")
+                    );
+
+
+                    alert("Login Successful!");
+
+
+                    // ==========================================
+                    // DONOR
+                    // ==========================================
+
+                    if (userid.startsWith("DN")) {
+
+                        window.location.href =
+                            "donor/donor_dashboard.html";
+
+                    }
+
+
+                    // ==========================================
+                    // FOOD RECEIVER / NGO
+                    // ==========================================
+
+                    else if (userid.startsWith("RN")) {
+
+                        window.location.href =
+                            "receiver/receiver_dashboard.html";
+
+                    }
+
+
+                    else {
+
+                        alert("Invalid User ID.");
+
+                    }
+
+                }
+
+                else {
+
+                    alert(
+                        result.message ||
+                        "Invalid User ID or Password."
+                    );
+
+                }
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Login Error:",
+                    error
+                );
+
+                alert(
+                    "Cannot connect to server. " +
+                    "Please make sure app.py is running."
+                );
+
+            }
+
+        });
+    </script>
 </body>
 
 </html>

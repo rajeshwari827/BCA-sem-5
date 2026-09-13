@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Donor Dashboard | HungerFree</title>
 
     <link rel="stylesheet" href="donor.css">
@@ -23,98 +24,103 @@
 
         <a href="profile.html">👤 My Profile</a>
 
-        <a href="../login.html">🚪 Logout</a>
+        <a href="../login.html" id="logoutBtn">🚪 Logout</a>
 
     </div>
+
 
     <div class="main-content">
 
         <div class="top-bar">
 
-            <h1>Welcome, Rahul Restaurant</h1>
+            <h1 id="welcomeMessage">Welcome, Donor</h1>
 
-            <p>Thank you for helping reduce food waste and feeding people in need.</p>
+            <p>
+                Thank you for helping reduce food waste and feeding people in need.
+            </p>
 
         </div>
+
+
+        <!-- DASHBOARD CARDS -->
 
         <div class="card-container">
 
             <div class="card">
-                <h2>35</h2>
+                <h2 id="totalDonations">0</h2>
                 <p>Total Donations</p>
             </div>
 
             <div class="card">
-                <h2>4</h2>
+                <h2 id="todayDonations">0</h2>
                 <p>Today's Donations</p>
             </div>
 
             <div class="card">
-                <h2>28</h2>
+                <h2 id="acceptedDonations">0</h2>
                 <p>Accepted</p>
             </div>
 
             <div class="card">
-                <h2>7</h2>
+                <h2 id="pendingDonations">0</h2>
                 <p>Pending</p>
             </div>
 
         </div>
 
+
+        <!-- QUICK ACTIONS -->
+
         <h2 class="section-title">Quick Actions</h2>
 
         <div class="quick-buttons">
 
-            <a href="donor_food.html" class="btn">➕ Donate Food</a>
+            <a href="donor_food.html" class="btn">
+                ➕ Donate Food
+            </a>
 
-            <a href="donation_history.html" class="btn">📜 Donation History</a>
+            <a href="donation_history.html" class="btn">
+                📜 Donation History
+            </a>
 
-            <a href="profile.html" class="btn">👤 My Profile</a>
+            <a href="profile.html" class="btn">
+                👤 My Profile
+            </a>
 
         </div>
+
+
+        <!-- LATEST DONATIONS -->
 
         <h2 class="section-title">Latest Donations</h2>
 
         <table>
 
-            <tr>
-                <th>Food</th>
-                <th>Quantity</th>
-                <th>Date</th>
-                <th>Status</th>
-            </tr>
+            <thead>
+                <tr>
+                    <th>Food</th>
+                    <th>Quantity</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
 
-            <tr>
-                <td>Rice</td>
-                <td>20 Kg</td>
-                <td>25 July 2026</td>
-                <td class="pending">Pending</td>
-            </tr>
+            <tbody id="donationTableBody">
 
-            <tr>
-                <td>Bread</td>
-                <td>50 Packets</td>
-                <td>24 July 2026</td>
-                <td class="accepted">Accepted</td>
-            </tr>
+                <tr>
+                    <td colspan="4">
+                        Loading donations...
+                    </td>
+                </tr>
 
-            <tr>
-                <td>Vegetables</td>
-                <td>15 Kg</td>
-                <td>23 July 2026</td>
-                <td class="accepted">Accepted</td>
-            </tr>
-
-            <tr>
-                <td>Milk</td>
-                <td>30 Litres</td>
-                <td>22 July 2026</td>
-                <td class="pending">Pending</td>
-            </tr>
+            </tbody>
 
         </table>
 
     </div>
+
+
+    <script src="../js/donor_dashboard.js"></script>
 
 </body>
 
