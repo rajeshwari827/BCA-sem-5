@@ -10,8 +10,23 @@
 }
 
 body {
-    background: #f4f6f8;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
     display: flex;
+    background: #fcf1e2;
+}
+
+.main-content {
+    margin-left: 260px;
+    width: calc(100% - 260px);
+    min-height: 100vh;
+    padding: 30px;
+
+    background-image: url("../images/bg-login.png");
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-size: 100% auto;
 }
 
 /* ==========================
@@ -21,20 +36,20 @@ body {
 .sidebar {
     width: 240px;
     height: 100vh;
-    background: #2E7D32;
+    background: #fcf1e2;
     position: fixed;
     padding: 20px;
 }
 
 .sidebar h2 {
-    color: #fff;
+    color: green;
     text-align: center;
     margin-bottom: 30px;
 }
 
 .sidebar a {
     display: block;
-    color: #fff;
+    color: green;
     text-decoration: none;
     padding: 12px;
     margin: 8px 0;
@@ -45,8 +60,9 @@ body {
 .sidebar a:hover,
 .sidebar .active {
     background: #fff;
-    color: #2E7D32;
+    color: Black;
 }
+
 
 /* ==========================
    MAIN CONTENT
@@ -59,14 +75,15 @@ body {
 }
 
 .main-content h1 {
-    color: #2E7D32;
+    color: Black;
     margin-bottom: 10px;
 }
 
 .main-content p {
-    color: #666;
+    color: Black;
     margin-bottom: 20px;
 }
+
 
 /* ==========================
    DASHBOARD CARDS
@@ -90,7 +107,7 @@ body {
 }
 
 .card h2 {
-    color: #2E7D32;
+    color: Black;
     font-size: 32px;
     margin-bottom: 10px;
 }
@@ -98,6 +115,7 @@ body {
 .card p {
     color: #666;
 }
+
 
 /* ==========================
    BUTTONS
@@ -109,12 +127,12 @@ body {
 
 .btn,
 button {
-    background: #2E7D32;
-    color: #fff;
+    background: rgb(236, 227, 227);
+    color: Black;
     text-decoration: none;
     border: none;
     padding: 12px 20px;
-    border-radius: 5px;
+    border-radius: 15px;
     cursor: pointer;
     margin-right: 10px;
     font-size: 15px;
@@ -122,7 +140,7 @@ button {
 
 .btn:hover,
 button:hover {
-    background: #1B5E20;
+    background: orange;
 }
 
 .logout-btn {
@@ -130,8 +148,9 @@ button:hover {
 }
 
 .logout-btn:hover {
-    background: #b71c1c;
+    background: #d32f2f;
 }
+
 
 /* ==========================
    SEARCH & FILTER
@@ -153,6 +172,7 @@ button:hover {
     border-radius: 5px;
 }
 
+
 /* ==========================
    TABLE
 ========================== */
@@ -165,8 +185,8 @@ table {
 }
 
 table th {
-    background: #2E7D32;
-    color: #fff;
+    background: rgb(49, 48, 48);
+    color: white;
     padding: 12px;
 }
 
@@ -179,6 +199,7 @@ table td {
 table tr:hover {
     background: #f8f8f8;
 }
+
 
 /* ==========================
    STATUS COLORS
@@ -204,6 +225,7 @@ table tr:hover {
     font-weight: bold;
 }
 
+
 /* ==========================
    PROFILE
 ========================== */
@@ -226,7 +248,7 @@ table tr:hover {
     width: 170px;
     height: 170px;
     border-radius: 50%;
-    border: 4px solid #2E7D32;
+    border: 4px solid;
 }
 
 .profile-details {
@@ -242,13 +264,27 @@ table tr:hover {
     border: none;
 }
 
+
+/* ==========================
+   PROFILE BUTTONS
+========================== */
+
 .button-group {
-    margin-top: 25px;
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
 .button-group button {
-    margin-right: 15px;
+    margin-right: 0;
+    padding: 12px 22px;
+    min-width: 105px;
+    height: 42px;
+    font-size: 14px;
+    border-radius: 15px;
 }
+
 
 /* ==========================
    RESPONSIVE
@@ -289,11 +325,22 @@ table tr:hover {
         width: 100%;
     }
 
+    /* Profile buttons on mobile */
+    .button-group {
+        width: 100%;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .button-group button {
+        width: 100%;
+        margin-right: 0;
+    }
+
     button,
     .btn {
         width: 100%;
         margin-bottom: 10px;
         text-align: center;
     }
-
 }

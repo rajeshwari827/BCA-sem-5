@@ -376,6 +376,101 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
 
 
         # =================================================
+        # DONOR DONATION HISTORY
+        # =================================================
+
+        if self.path.startswith("/api/donor/donations"):
+
+            try:
+
+                parsed_url = urlparse(
+                    self.path
+                )
+
+                query = parse_qs(
+                    parsed_url.query
+                )
+
+                donor_id = query.get(
+                    "donor_id",
+                    [None]
+                )[0]
+
+
+                if not donor_id:
+
+                    self.send_json({
+                        "success": False,
+                        "message": "Donor ID is required"
+                    }, 400)
+
+                    return
+
+
+                donor_id = donor_id.strip().upper()
+
+
+                conn = get_connection()
+
+                cursor = conn.cursor(
+                    dictionary=True
+                )
+
+
+                # =========================================
+                # GET ALL DONATIONS
+                # =========================================
+
+                cursor.execute("""
+                    SELECT
+                        donation_id,
+                        food_name,
+                        quantity,
+                        description,
+                        pickup_time,
+                        status,
+                        created_at
+                    FROM donation
+                    WHERE donor_id = %s
+                    ORDER BY created_at DESC
+                """, (donor_id,))
+
+
+                donations = cursor.fetchall()
+
+
+                cursor.close()
+                conn.close()
+
+
+                self.send_json({
+
+                    "success": True,
+
+                    "donations": donations
+
+                })
+
+
+            except Exception as e:
+
+                print(
+                    "DONATION HISTORY ERROR:",
+                    e
+                )
+
+                self.send_json({
+
+                    "success": False,
+
+                    "message": str(e)
+
+                }, 500)
+
+            return
+
+
+        # =================================================
         # NORMAL HTML / FILE REQUEST
         # =================================================
 
@@ -403,14 +498,70 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
             )
 
 
+            if content_length == 0:
+
+                self.send_json({
+
+                    "success": False,
+
+                    "message":
+                        "Request body is empty"
+
+                }, 400)
+
+                return
+
+
             body = self.rfile.read(
                 content_length
             )
 
 
+            if not body:
+
+                self.send_json({
+
+                    "success": False,
+
+                    "message":
+                        "Request body is empty"
+
+                }, 400)
+
+                return
+
+
             data = json.loads(
                 body.decode("utf-8")
             )
+
+
+            if not isinstance(data, dict):
+
+                self.send_json({
+
+                    "success": False,
+
+                    "message":
+                        "Invalid JSON data"
+
+                }, 400)
+
+                return
+
+
+        except json.JSONDecodeError as e:
+
+            self.send_json({
+
+                "success": False,
+
+                "message":
+                    "Invalid JSON request: " + str(e)
+
+            }, 400)
+
+            return
 
 
         except Exception as e:
@@ -420,10 +571,227 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                 "success": False,
 
                 "message":
-                    "Invalid request data: "
-                    + str(e)
+                    "Invalid request data: " + str(e)
 
             }, 400)
+
+            return
+
+
+        # =================================================
+        # DONOR FOOD DONATION
+        # =================================================
+
+        if self.path == "/api/donor/donate":
+
+            try:
+
+                # =========================================
+                # REQUIRED FIELDS
+                # =========================================
+
+                required_fields = [
+
+                    "donor_id",
+
+                    "food_name",
+
+                    "quantity",
+
+                    "pickup_time"
+
+                ]
+
+
+                for field in required_fields:
+
+                    if not data.get(field):
+
+                        self.send_json({
+
+                            "success": False,
+
+                            "message":
+                                field.replace(
+                                    "_",
+                                    " "
+                                ).title()
+                                + " is required"
+
+                        }, 400)
+
+                        return
+
+
+                # =========================================
+                # GET VALUES
+                # =========================================
+
+                donor_id = str(
+                    data["donor_id"]
+                ).strip().upper()
+
+                food_name = str(
+                    data["food_name"]
+                ).strip()
+
+                quantity = str(
+                    data["quantity"]
+                ).strip()
+
+                description = str(
+                    data.get(
+                        "description",
+                        ""
+                    )
+                ).strip()
+
+                pickup_time = str(
+                    data["pickup_time"]
+                ).strip()
+
+
+                # =========================================
+                # CHECK DONOR ID
+                # =========================================
+
+                if not donor_id.startswith("DN"):
+
+                    self.send_json({
+
+                        "success": False,
+
+                        "message":
+                            "Invalid donor ID"
+
+                    }, 400)
+
+                    return
+
+
+                # =========================================
+                # CONNECT DATABASE
+                # =========================================
+
+                conn = get_connection()
+
+                cursor = conn.cursor(
+                    dictionary=True
+                )
+
+
+                # =========================================
+                # CHECK DONOR EXISTS
+                # =========================================
+
+                cursor.execute("""
+                    SELECT donor_id
+                    FROM donor
+                    WHERE donor_id = %s
+                """, (donor_id,))
+
+
+                donor = cursor.fetchone()
+
+
+                if not donor:
+
+                    cursor.close()
+                    conn.close()
+
+                    self.send_json({
+
+                        "success": False,
+
+                        "message":
+                            "Donor not found"
+
+                    }, 404)
+
+                    return
+
+
+                # =========================================
+                # INSERT DONATION
+                # =========================================
+
+                cursor.execute("""
+                    INSERT INTO donation
+                    (
+                        donor_id,
+                        food_name,
+                        quantity,
+                        description,
+                        pickup_time,
+                        status
+                    )
+                    VALUES
+                    (
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s
+                    )
+                """, (
+
+                    donor_id,
+
+                    food_name,
+
+                    quantity,
+
+                    description,
+
+                    pickup_time,
+
+                    "Pending"
+
+                ))
+
+
+                donation_id = cursor.lastrowid
+
+
+                conn.commit()
+
+
+                cursor.close()
+                conn.close()
+
+
+                # =========================================
+                # SUCCESS RESPONSE
+                # =========================================
+
+                self.send_json({
+
+                    "success": True,
+
+                    "message":
+                        "Food donation submitted successfully",
+
+                    "donation_id":
+                        donation_id
+
+                })
+
+
+            except Exception as e:
+
+                print(
+                    "FOOD DONATION ERROR:",
+                    e
+                )
+
+                self.send_json({
+
+                    "success": False,
+
+                    "message": str(e)
+
+                }, 500)
 
             return
 
@@ -956,8 +1324,11 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                         WHERE donor_id = %s
                         AND password = %s
                     """, (
+
                         userid,
+
                         password
+
                     ))
 
 
@@ -1015,8 +1386,11 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                         WHERE ngo_id = %s
                         AND password = %s
                     """, (
+
                         userid,
+
                         password
+
                     ))
 
 
@@ -1118,13 +1492,16 @@ if __name__ == "__main__":
         FoodDonationServer
     )
 
+
     print(
         "HungerFree server running at:"
     )
 
+
     print(
         "http://localhost:8000"
     )
+
 
     print(
         "Press CTRL+C to stop the server."
