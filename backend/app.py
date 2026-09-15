@@ -1271,35 +1271,82 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
         # LOGIN
         # =================================================
 
-        elif self.path == "/api/login":
+               # =================================================
+        # LOGIN
+        # =================================================
+
+        if self.path == "/api/login":
 
             try:
 
-                userid = data.get(
-                    "userid"
+                # =========================================
+                # GET LOGIN DATA
+                # =========================================
+
+                userid = str(
+                    data.get("userid", "")
+                ).strip().upper()
+
+                username = str(
+                    data.get("username", "")
+                ).strip()
+
+                password = str(
+                    data.get("password", "")
                 )
 
-                password = data.get(
-                    "password"
-                )
+                email = str(
+                    data.get("email", "")
+                ).strip()
 
 
-                if not userid or not password:
+                # =========================================
+                # CHECK EMPTY FIELDS
+                # =========================================
+
+                if not userid:
 
                     self.send_json({
-
                         "success": False,
-
-                        "message":
-                            "User ID and password are required"
-
+                        "message": "Please enter User ID."
                     }, 400)
 
                     return
 
 
-                userid = userid.strip().upper()
+                if not username:
 
+                    self.send_json({
+                        "success": False,
+                        "message": "Please enter User Name."
+                    }, 400)
+
+                    return
+
+
+                if not password:
+
+                    self.send_json({
+                        "success": False,
+                        "message": "Please enter Password."
+                    }, 400)
+
+                    return
+
+
+                if not email:
+
+                    self.send_json({
+                        "success": False,
+                        "message": "Please enter Email ID."
+                    }, 400)
+
+                    return
+
+
+                # =========================================
+                # DATABASE CONNECTION
+                # =========================================
 
                 conn = get_connection()
 
@@ -1317,29 +1364,30 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                     cursor.execute("""
                         SELECT
                             donor_id,
-                            resturaent_name,
                             owner_name,
-                            email
+                            email,
+                            resturaent_name
                         FROM donor
                         WHERE donor_id = %s
+                        AND owner_name = %s
+                        AND email = %s
                         AND password = %s
                     """, (
-
                         userid,
-
+                        username,
+                        email,
                         password
-
                     ))
 
 
                     user = cursor.fetchone()
 
 
-                    cursor.close()
-                    conn.close()
-
-
                     if user:
+
+                        cursor.close()
+                        conn.close()
+
 
                         self.send_json({
 
@@ -1348,30 +1396,42 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                             "message":
                                 "Login successful",
 
-                            "user": user,
+                            "role":
+                                "donor",
 
-                            "dashboard":
-                                "/donor/donor_dashboard.html"
+                            "user_id":
+                                user["donor_id"],
+
+                            "user":
+                                user
 
                         })
 
+
+                        return
+
+
                     else:
+
+                        cursor.close()
+                        conn.close()
+
 
                         self.send_json({
 
                             "success": False,
 
                             "message":
-                                "Invalid donor ID or password"
+                                "Donor details do not match. Please check User ID, User Name, Password and Email."
 
                         }, 401)
 
 
-                    return
+                        return
 
 
                 # =========================================
-                # RECEIVER LOGIN
+                # RECEIVER / NGO LOGIN
                 # =========================================
 
                 elif userid.startswith("RN"):
@@ -1379,29 +1439,30 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                     cursor.execute("""
                         SELECT
                             ngo_id,
-                            organization_name,
                             representative_name,
-                            email
+                            email,
+                            organization_name
                         FROM ngos
                         WHERE ngo_id = %s
+                        AND representative_name = %s
+                        AND email = %s
                         AND password = %s
                     """, (
-
                         userid,
-
+                        username,
+                        email,
                         password
-
                     ))
 
 
                     user = cursor.fetchone()
 
 
-                    cursor.close()
-                    conn.close()
-
-
                     if user:
+
+                        cursor.close()
+                        conn.close()
+
 
                         self.send_json({
 
@@ -1410,27 +1471,43 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                             "message":
                                 "Login successful",
 
-                            "user": user,
+                            "role":
+                                "receiver",
 
-                            "dashboard":
-                                "/receiver/receiver_dashboard.html"
+                            "user_id":
+                                user["ngo_id"],
+
+                            "user":
+                                user
 
                         })
 
+
+                        return
+
+
                     else:
+
+                        cursor.close()
+                        conn.close()
+
 
                         self.send_json({
 
                             "success": False,
 
                             "message":
-                                "Invalid receiver ID or password"
+                                "Receiver details do not match. Please check User ID, User Name, Password and Email."
 
                         }, 401)
 
 
-                    return
+                        return
 
+
+                # =========================================
+                # INVALID USER ID
+                # =========================================
 
                 else:
 
@@ -1443,9 +1520,10 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                         "success": False,
 
                         "message":
-                            "Invalid User ID. Use DN or RN ID."
+                            "Invalid User ID. Use DN001 for Donor or RN001 for Receiver."
 
                     }, 400)
+
 
                     return
 
@@ -1457,13 +1535,16 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                     e
                 )
 
+
                 self.send_json({
 
                     "success": False,
 
-                    "message": str(e)
+                    "message":
+                        "Login error: " + str(e)
 
                 }, 500)
+
 
             return
 
@@ -1473,11 +1554,11 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
         # =================================================
 
         self.send_json({
-
-            "success": False,
-
-            "message": "API endpoint not found"
-
+        
+        "success": False,
+        
+        "message": "API endpoint not found"
+        
         }, 404)
 
 

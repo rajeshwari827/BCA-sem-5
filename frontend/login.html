@@ -50,112 +50,206 @@
                 <h4>Not a user ? Then register yourself first according to <a href="donor_registration.html">Food
                         Donor</a>
                     and <a href="ngo_registration.html">Food Reciver</a> </h4>
+
+                <!-- Error message will appear here -->
+                <p id="loginError" style="color: red; text-align: center;"></p>
+
                 <button>Submit</button>
             </form>
         </div>
     </div>
 
     <script>
-        document.getElementById("loginForm").addEventListener("submit", async function (e) {
+    document.getElementById("loginForm").addEventListener("submit", async function (e) {
 
-            e.preventDefault();
+        e.preventDefault();
 
-            const userid = document.getElementById("userid").value.trim().toUpperCase();
-            const password = document.getElementById("password").value;
+        const userid = document.getElementById("userid").value.trim().toUpperCase();
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value;
+        const email = document.getElementById("Email:").value.trim();
 
-            try {
+        const loginError = document.getElementById("loginError");
 
-                const response = await fetch("/api/login", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        userid: userid,
-                        password: password
-                    })
-                });
+        // Clear previous error
+        if (loginError) {
+            loginError.textContent = "";
+        }
 
-                const result = await response.json();
+        // ==========================================
+        // CHECK EMPTY FIELDS
+        // ==========================================
 
-                console.log("Login response:", result);
+        if (!userid) {
+            showError("Please enter User ID.");
+            return;
+        }
 
-                if (result.success) {
+        if (!username) {
+            showError("Please enter User Name.");
+            return;
+        }
 
-                    // ==========================================
-                    // SAVE LOGGED-IN USER ID
-                    // ==========================================
+        if (!password) {
+            showError("Please enter Password.");
+            return;
+        }
 
-                    localStorage.setItem("user_id", userid);
-
-                    console.log(
-                        "Saved User ID:",
-                        localStorage.getItem("user_id")
-                    );
-
-
-                    alert("Login Successful!");
-
-
-                    // ==========================================
-                    // DONOR
-                    // ==========================================
-
-                    if (userid.startsWith("DN")) {
-
-                        window.location.href =
-                            "donor/donor_dashboard.html";
-
-                    }
+        if (!email) {
+            showError("Please enter Email ID.");
+            return;
+        }
 
 
-                    // ==========================================
-                    // FOOD RECEIVER / NGO
-                    // ==========================================
+        // ==========================================
+        // CHECK USER ID FORMAT
+        // ==========================================
 
-                    else if (userid.startsWith("RN")) {
+        if (
+            !userid.startsWith("DN") &&
+            !userid.startsWith("RN")
+        ) {
+            showError(
+                "Invalid User ID. Donor ID must start with DN and Receiver ID must start with RN."
+            );
+            return;
+        }
 
-                        window.location.href =
-                            "receiver/receiver_dashboard.html";
 
-                    }
+        try {
+
+            const response = await fetch("/api/login", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    userid: userid,
+
+                    username: username,
+
+                    password: password,
+
+                    email: email
+
+                })
+
+            });
 
 
-                    else {
+            const result = await response.json();
 
-                        alert("Invalid User ID.");
+            console.log("Login response:", result);
 
-                    }
 
+            // ==========================================
+            // LOGIN SUCCESS
+            // ==========================================
+
+            if (result.success) {
+
+                localStorage.setItem(
+                    "user_id",
+                    result.user_id || userid
+                );
+
+                localStorage.setItem(
+                    "user_role",
+                    result.role
+                );
+
+
+                // ======================================
+                // DONOR DASHBOARD
+                // ======================================
+
+                if (result.role === "donor") {
+
+                    window.location.href =
+                        "donor/donor_dashboard.html";
+
+                    return;
                 }
 
-                else {
 
-                    alert(
-                        result.message ||
-                        "Invalid User ID or Password."
-                    );
+                // ======================================
+                // RECEIVER DASHBOARD
+                // ======================================
 
+                if (result.role === "receiver") {
+
+                    window.location.href =
+                        "receiver/receiver_dashboard.html";
+
+                    return;
                 }
 
             }
 
-            catch (error) {
 
-                console.error(
-                    "Login Error:",
-                    error
-                );
+            // ==========================================
+            // LOGIN FAILED
+            // ==========================================
 
-                alert(
-                    "Cannot connect to server. " +
-                    "Please make sure app.py is running."
-                );
+            showError(
+                result.message ||
+                "The entered details do not match our records."
+            );
 
+        }
+
+
+        catch (error) {
+
+            console.error(
+                "Login Error:",
+                error
+            );
+
+            showError(
+                "Cannot connect to server. Please make sure app.py is running."
+            );
+
+        }
+
+
+        // ==========================================
+        // DISPLAY ERROR IN FORM
+        // ==========================================
+
+        function showError(message) {
+
+            let errorBox =
+                document.getElementById("loginError");
+
+            if (!errorBox) {
+
+                errorBox =
+                    document.createElement("p");
+
+                errorBox.id = "loginError";
+
+                errorBox.style.color = "red";
+
+                errorBox.style.textAlign = "center";
+
+                document
+                    .getElementById("loginForm")
+                    .insertBefore(
+                        errorBox,
+                        document.querySelector("#loginForm button")
+                    );
             }
 
-        });
-    </script>
+            errorBox.textContent = message;
+        }
+
+    });
+</script>
 </body>
 
 </html>
