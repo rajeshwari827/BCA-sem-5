@@ -2,11 +2,15 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Accepted Food | HungerFree</title>
 
-    <link rel="stylesheet" href="receiver.css">
+    <link rel="stylesheet" href="receiver.css?v=2">
+
 </head>
 
 <body>
@@ -17,88 +21,132 @@
 
         <h2>🍽 HungerFree</h2>
 
-        <a href="receiver_dashboard.html">🏠 Dashboard</a>
+        <a href="receiver_dashboard.html">
+            🏠 Dashboard
+        </a>
 
-        <a href="available_food.html">🍱 Available Food</a>
+        <a href="available_food.html">
+            🍱 Available Food
+        </a>
 
-        <a href="accepted_food.html" class="active">✔ Accepted Food</a>
+        <a href="accepted_food.html" class="active">
+            ✔ Accepted Food
+        </a>
 
-        <a href="profile.html">👤 My Profile</a>
+        <a href="profile.html">
+            👤 My Profile
+        </a>
 
-        <a href="../login.html">🚪 Logout</a>
+        <a href="../login.html" id="logoutBtn">
+            🚪 Logout
+        </a>
 
     </div>
+
 
     <!-- Main Content -->
 
     <div class="main-content">
 
-        <h1>Accepted Food</h1>
+        <h1>
+            Accepted Food
+        </h1>
 
-        <p>Manage all accepted food donations.</p>
+        <p>
+            Manage all accepted food donations.
+        </p>
 
-        <!-- Search -->
+
+        <!-- Search & Filter -->
 
         <div class="top-controls">
 
-            <input type="text" placeholder="Search Donation">
+            <input type="text" id="searchDonation" placeholder="Search Donation">
 
-            <select>
-                <option>All Status</option>
-                <option>Accepted</option>
-                <option>Picked Up</option>
+
+            <select id="statusFilter">
+
+                <option value="">
+                    All Status
+                </option>
+
+                <option value="Approved">
+                    Approved
+                </option>
+
+                <option value="Picked Up">
+                    Picked Up
+                </option>
+
             </select>
 
         </div>
+
 
         <!-- Table -->
 
         <table>
 
-            <tr>
+            <thead>
 
-                <th>Donation ID</th>
+                <tr>
 
-                <th>Restaurant</th>
+                    <th>
+                        Donation ID
+                    </th>
 
-                <th>Food</th>
+                    <th>
+                        Restaurant
+                    </th>
 
-                <th>Quantity</th>
+                    <th>
+                        Food
+                    </th>
 
-                <th>Pickup Time</th>
+                    <th>
+                        Quantity
+                    </th>
 
-                <th>Contact</th>
+                    <th>
+                        Pickup Time
+                    </th>
 
-                <th>Status</th>
+                    <th>
+                        Contact
+                    </th>
 
-                <th>Action</th>
+                    <th>
+                        Status
+                    </th>
 
-            </tr>
+                    <th>
+                        Action
+                    </th>
 
-            <tr>
+                </tr>
 
-                <td>101</td>
+            </thead>
 
-                <td>Rahul Restaurant</td>
 
-                <td>Rice</td>
+            <tbody id="acceptedFoodBody">
 
-                <td>20 Kg</td>
+                <tr>
 
-                <td>2:00 PM</td>
+                    <td colspan="8">
+                        Loading accepted donations...
+                    </td>
 
-                <td>9876543210</td>
+                </tr>
 
-                <td class="accepted">Accepted</td>
+            </tbody>
 
-                <td>
-                    <button>Picked Up</button>
-                </td>
+        </table>
 
-            </tr>
+    </div>
 
-            <tr>
 
-                <td>102</td>
+    <script src="../js/accepted_food.js"></script>
 
-                <td>ABC Hotel</td>
+</body>
+
+</html>

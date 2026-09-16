@@ -2,169 +2,271 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Notifications | HungerFree</title>
+
     <link rel="stylesheet" href="admin.css">
+
 </head>
 
+
 <body>
+
 
     <!-- Header -->
 
     <header class="header">
 
-        <h1>HungerFree Admin Panel</h1>
+        <h1>
+            HungerFree Admin Panel
+        </h1>
+
 
         <nav>
-            <a href="admin_dashboard.html">Dashboard</a>
-            <a href="manage_users.html">Users</a>
-            <a href="manage_donors.html">Donors</a>
-            <a href="manage_ngos.html">NGOs</a>
-            <a href="manage_donations.html">Donations</a>
-            <a href="reports.html">Reports</a>
-            <a href="notifications.html">Notifications</a>
-            <a href="feedback.html">Feedback</a>
-            <a href="profile.html">Profile</a>
+
+            <a href="admin_dashboard.html">
+                Dashboard
+            </a>
+
+            <a href="manage_users.html">
+                Users
+            </a>
+
+            <a href="manage_donors.html">
+                Donors
+            </a>
+
+            <a href="manage_ngos.html">
+                NGOs
+            </a>
+
+            <a href="manage_donations.html">
+                Donations
+            </a>
+
+            <a href="reports.html">
+                Reports
+            </a>
+
+            <a href="notifications.html">
+                Notifications
+            </a>
+
+            <a href="feedback.html">
+                Feedback
+            </a>
+
+            <a href="profile.html">
+                Profile
+            </a>
+
         </nav>
 
     </header>
+
 
     <!-- Page Title -->
 
     <section class="welcome">
 
-        <h2>Notifications</h2>
+        <h2>
+            Notifications
+        </h2>
 
         <p>
-            Send important announcements and updates to donors, NGOs, or all users.
+            Send important announcements and updates to donors,
+            NGOs, or all users.
         </p>
 
     </section>
+
 
     <!-- Notification Form -->
 
     <section class="notification-form">
 
-        <h2>Create Notification</h2>
+        <h2>
+            Create Notification
+        </h2>
 
-        <form>
 
-            <label>Notification Title</label>
-            <input type="text" placeholder="Enter Notification Title" required>
+        <form id="notificationForm">
 
-            <label>Send To</label>
 
-            <select required>
-                <option>All Users</option>
-                <option>Food Donors</option>
-                <option>NGOs</option>
+            <label>
+                Notification Title
+            </label>
+
+            <input type="text" id="notificationTitle" placeholder="Enter Notification Title" required>
+
+
+            <label>
+                Send To
+            </label>
+
+            <select id="sendTo" required>
+
+                <option value="">
+                    Select Recipient
+                </option>
+
+                <option value="All Users">
+                    All Users
+                </option>
+
+                <option value="Food Donors">
+                    Food Donors
+                </option>
+
+                <option value="NGOs">
+                    NGOs
+                </option>
+
             </select>
 
-            <label>Message</label>
 
-            <textarea rows="6" placeholder="Write your notification message here..." required></textarea>
+            <label>
+                Message
+            </label>
 
-            <button type="submit">Send Notification</button>
+            <textarea id="notificationMessage" rows="6" placeholder="Write your notification message here..."
+                required></textarea>
+
+
+            <button type="submit">
+                Send Notification
+            </button>
+
 
         </form>
 
     </section>
 
+
     <!-- Previous Notifications -->
 
     <section class="table-section">
 
-        <h2>Previously Sent Notifications</h2>
+        <h2>
+            Previously Sent Notifications
+        </h2>
+
 
         <table>
 
-            <tr>
-                <th>Notification ID</th>
-                <th>Title</th>
-                <th>Sent To</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
+            <thead>
 
-            <tr>
-                <td>N001</td>
-                <td>Food Donation Camp</td>
-                <td>All Users</td>
-                <td>01-Aug-2026</td>
-                <td>Sent</td>
-                <td>
-                    <button>View</button>
-                    <button>Delete</button>
-                </td>
-            </tr>
+                <tr>
 
-            <tr>
-                <td>N002</td>
-                <td>New NGO Registration</td>
-                <td>Admin</td>
-                <td>31-Jul-2026</td>
-                <td>Sent</td>
-                <td>
-                    <button>View</button>
-                    <button>Delete</button>
-                </td>
-            </tr>
+                    <th>
+                        Notification ID
+                    </th>
 
-            <tr>
-                <td>N003</td>
-                <td>Donation Pickup Reminder</td>
-                <td>Food Donors</td>
-                <td>30-Jul-2026</td>
-                <td>Sent</td>
-                <td>
-                    <button>View</button>
-                    <button>Delete</button>
-                </td>
-            </tr>
+                    <th>
+                        Title
+                    </th>
 
-            <tr>
-                <td>N004</td>
-                <td>Thank You for Your Support</td>
-                <td>NGOs</td>
-                <td>29-Jul-2026</td>
-                <td>Sent</td>
-                <td>
-                    <button>View</button>
-                    <button>Delete</button>
-                </td>
-            </tr>
+                    <th>
+                        Sent To
+                    </th>
+
+                    <th>
+                        Date
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                    <th>
+                        Action
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="notificationTableBody">
+
+                <tr>
+
+                    <td colspan="6">
+                        No notifications available.
+                    </td>
+
+                </tr>
+
+            </tbody>
 
         </table>
 
     </section>
 
+
     <!-- Summary Cards -->
 
     <section class="card-container">
 
-        <div class="card">
-            <h2>35</h2>
-            <p>Total Notifications</p>
-        </div>
 
         <div class="card">
-            <h2>20</h2>
-            <p>Sent to Donors</p>
+
+            <h2 id="totalNotifications">
+                0
+            </h2>
+
+            <p>
+                Total Notifications
+            </p>
+
         </div>
 
-        <div class="card">
-            <h2>10</h2>
-            <p>Sent to NGOs</p>
-        </div>
 
         <div class="card">
-            <h2>5</h2>
-            <p>Sent to All Users</p>
+
+            <h2 id="donorNotifications">
+                0
+            </h2>
+
+            <p>
+                Sent to Donors
+            </p>
+
         </div>
+
+
+        <div class="card">
+
+            <h2 id="ngoNotifications">
+                0
+            </h2>
+
+            <p>
+                Sent to NGOs
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h2 id="allUserNotifications">
+                0
+            </h2>
+
+            <p>
+                Sent to All Users
+            </p>
+
+        </div>
+
 
     </section>
+
 
     <!-- Footer -->
 
@@ -175,6 +277,9 @@
         </p>
 
     </footer>
+
+
+    <script src="../js/notifications.js"></script>
 
 </body>
 

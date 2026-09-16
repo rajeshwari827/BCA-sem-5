@@ -10,11 +10,23 @@
 .navbar2 {
     display: flex;
     gap: 100px;
-    /* Space between menu items */
-    margin-left: 20%;
+
+    /* Removed margin-left: 20%; */
+
     padding: 20px;
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    background: white;
+    width: 100%;
+    box-sizing: border-box;
+
+    justify-content: center;
 }
+
 
 .nav-btn {
     text-decoration: none;

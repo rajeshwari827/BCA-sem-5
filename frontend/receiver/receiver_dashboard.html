@@ -9,7 +9,7 @@
 
     <title>Receiver Dashboard - HungerFree</title>
 
-    <link rel="stylesheet" href="receiver.css">
+    <link rel="stylesheet" href="receiver.css?v=2">
 
 </head>
 
@@ -23,28 +23,23 @@
             🍽 HungerFree
         </h2>
 
-
         <a href="receiver_dashboard.html" class="active">
             🏠 Dashboard
         </a>
-
 
         <a href="available_food.html">
             🍱 Available Food
         </a>
 
-
         <a href="accepted_food.html">
             ✔ Accepted Food
         </a>
-
 
         <a href="profile.html">
             👤 My Profile
         </a>
 
-
-        <a href="../login.html">
+        <a href="../login.html" id="logoutBtn">
             🚪 Logout
         </a>
 
@@ -55,10 +50,9 @@
 
     <div class="main-content">
 
-        <h1>
-            Welcome, Helping Hands NGO
+        <h1 id="welcomeMessage">
+            Welcome, Receiver
         </h1>
-
 
         <p>
             Together we can reduce food waste and feed more people.
@@ -71,8 +65,8 @@
 
             <div class="card">
 
-                <h2>
-                    18
+                <h2 id="availableDonations">
+                    0
                 </h2>
 
                 <p>
@@ -84,8 +78,8 @@
 
             <div class="card">
 
-                <h2>
-                    12
+                <h2 id="acceptedDonations">
+                    0
                 </h2>
 
                 <p>
@@ -97,8 +91,8 @@
 
             <div class="card">
 
-                <h2>
-                    3
+                <h2 id="todayPickups">
+                    0
                 </h2>
 
                 <p>
@@ -110,8 +104,8 @@
 
             <div class="card">
 
-                <h2>
-                    45
+                <h2 id="completedDonations">
+                    0
                 </h2>
 
                 <p>
@@ -131,11 +125,9 @@
                 🍱 Available Food
             </a>
 
-
             <a href="accepted_food.html" class="btn">
                 ✔ Accepted Food
             </a>
-
 
             <a href="profile.html" class="btn">
                 👤 My Profile
@@ -144,6 +136,8 @@
         </div>
 
 
+        <!-- Recent Available Donations -->
+
         <h2 class="section-title">
             Recent Available Donations
         </h2>
@@ -151,108 +145,53 @@
 
         <table>
 
-            <tr>
+            <thead>
 
-                <th>
-                    Restaurant
-                </th>
+                <tr>
 
-                <th>
-                    Food
-                </th>
+                    <th>
+                        Restaurant
+                    </th>
 
-                <th>
-                    Quantity
-                </th>
+                    <th>
+                        Food
+                    </th>
 
-                <th>
-                    City
-                </th>
+                    <th>
+                        Quantity
+                    </th>
 
-                <th>
-                    Status
-                </th>
+                    <th>
+                        City
+                    </th>
 
-            </tr>
+                    <th>
+                        Status
+                    </th>
 
+                </tr>
 
-            <tr>
-
-                <td>
-                    Rahul Restaurant
-                </td>
-
-                <td>
-                    Rice
-                </td>
-
-                <td>
-                    20 Kg
-                </td>
-
-                <td>
-                    Rajkot
-                </td>
-
-                <td class="available">
-                    Available
-                </td>
-
-            </tr>
+            </thead>
 
 
-            <tr>
+            <tbody id="donationTableBody">
 
-                <td>
-                    ABC Hotel
-                </td>
+                <tr>
 
-                <td>
-                    Bread
-                </td>
+                    <td colspan="5">
+                        Loading donations...
+                    </td>
 
-                <td>
-                    50
-                </td>
+                </tr>
 
-                <td>
-                    Rajkot
-                </td>
-
-                <td class="available">
-                    Available
-                </td>
-
-            </tr>
-
-
-            <tr>
-
-                <td>
-                    Royal Restaurant
-                </td>
-
-                <td>
-                    Vegetables
-                </td>
-
-                <td>
-                    30 Kg
-                </td>
-
-                <td>
-                    Rajkot
-                </td>
-
-                <td class="available">
-                    Available
-                </td>
-
-            </tr>
+            </tbody>
 
         </table>
 
     </div>
+
+
+    <script src="../js/receiver_dashboard.js"></script>
 
 </body>
 
