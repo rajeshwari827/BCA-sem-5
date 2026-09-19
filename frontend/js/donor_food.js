@@ -1,10 +1,15 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-    const form = document.getElementById("donationForm");
+    const donationForm = document.getElementById("donationForm");
 
-    form.addEventListener("submit", async function (event) {
+    if (!donationForm) {
+        console.error("Donation form not found.");
+        return;
+    }
 
-        event.preventDefault();
+    donationForm.addEventListener("submit", async function (e) {
+
+        e.preventDefault();
 
         const donorId = localStorage.getItem("user_id");
 
@@ -20,57 +25,135 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        const foodName = document.getElementById("foodName").value.trim();
-        const quantity = document.getElementById("quantity").value.trim();
-        const cookingDate = document.getElementById("cookingDate").value;
-        const expiryTime = document.getElementById("expiryTime").value;
-        const additionalNotes = document.getElementById("additionalNotes").value.trim();
+        // Get form values
+        const foodName =
+            document.getElementById("foodName").value.trim();
 
-        const pickupTime = cookingDate + " " + expiryTime;
+        const foodCategory =
+            document.getElementById("foodCategory").value;
 
-        const data = {
+        const quantity =
+            document.getElementById("quantity").value.trim();
+
+        const cookingDate =
+            document.getElementById("cookingDate").value;
+
+        const expiryTime =
+            document.getElementById("expiryTime").value;
+
+        const additionalNotes =
+            document.getElementById("additionalNotes").value.trim();
+
+        const imageInput =
+            document.getElementById("foodImage");
+
+
+        // Validate category
+        if (!foodCategory) {
+            alert("Please select a food category.");
+            document.getElementById("foodCategory").focus();
+            return;
+        }
+
+
+        // Convert image to Base64
+        let foodImage = "";
+
+        if (imageInput.files.length > 0) {
+
+            const file = imageInput.files[0];
+
+            foodImage = await new Promise(function (resolve, reject) {
+
+                const reader = new FileReader();
+
+                reader.onload = function () {
+                    resolve(reader.result);
+                };
+
+                reader.onerror = function () {
+                    reject(new Error("Unable to read image."));
+                };
+
+                reader.readAsDataURL(file);
+            });
+        }
+
+
+        // Data sent to Python backend
+        const donationData = {
+
             donor_id: donorId,
+
             food_name: foodName,
+
+            food_category: foodCategory,
+
             quantity: quantity,
+
+            cooking_date: cookingDate,
+
+            expiry_time: expiryTime,
+
+            // Your current form does not have a contact number field.
+            // Send donor phone through backend if required.
+            contact_number: "",
+
             description: additionalNotes,
-            pickup_time: pickupTime
+
+            food_image: foodImage
         };
+
 
         try {
 
-            const response = await fetch("/api/donor/donate", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-            });
+            const response = await fetch(
+                "/api/donor/donate",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify(donationData)
+                }
+            );
+
 
             const result = await response.json();
 
+
             if (result.success) {
 
-                alert("Food donation submitted successfully!");
+                alert("Food donation submitted successfully.");
 
-                form.reset();
+                donationForm.reset();
 
-                window.location.href = "donation_history.html";
+                // Go directly to donation history
+                window.location.href =
+                    "donation_history.html";
 
             } else {
 
-                alert("Donation failed:\n" + result.message);
-
+                alert(
+                    result.message ||
+                    "Unable to submit food donation."
+                );
             }
+
 
         } catch (error) {
 
-            console.error("Donation Error:", error);
-
-            alert(
-                "Cannot connect to the server.\n\n" +
-                "Please make sure the Python backend is running."
+            console.error(
+                "Donation Error:",
+                error
             );
 
+            alert(
+                "Cannot connect to the server. " +
+                "Please make sure the Python backend is running."
+            );
         }
 
     });
