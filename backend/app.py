@@ -396,7 +396,6 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                     [None]
                 )[0]
 
-
                 if not donor_id:
 
                     self.send_json({
@@ -406,9 +405,7 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
 
                     return
 
-
                 donor_id = donor_id.strip().upper()
-
 
                 conn = get_connection()
 
@@ -416,17 +413,18 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                     dictionary=True
                 )
 
-
-                # =========================================
-                # GET ALL DONATIONS
-                # =========================================
-
                 cursor.execute("""
                     SELECT
                         donation_id,
+                        donor_id,
                         food_name,
+                        food_category,
                         quantity,
+                        cooking_date,
+                        expiry_time,
+                        contact_number,
                         description,
+                        food_image,
                         pickup_time,
                         status,
                         created_at
@@ -435,22 +433,15 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                     ORDER BY created_at DESC
                 """, (donor_id,))
 
-
                 donations = cursor.fetchall()
-
 
                 cursor.close()
                 conn.close()
 
-
                 self.send_json({
-
                     "success": True,
-
                     "donations": donations
-
                 })
-
 
             except Exception as e:
 
@@ -460,15 +451,11 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                 )
 
                 self.send_json({
-
                     "success": False,
-
                     "message": str(e)
-
                 }, 500)
 
             return
-
 
         # =================================================
         # NORMAL HTML / FILE REQUEST
@@ -586,46 +573,28 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
 
             try:
 
-                # =========================================
-                # REQUIRED FIELDS
-                # =========================================
-
                 required_fields = [
-
                     "donor_id",
-
                     "food_name",
-
+                    "food_category",
                     "quantity",
-
-                    "pickup_time"
-
+                    "cooking_date",
+                    "expiry_time",
+                    "contact_number"
                 ]
-
 
                 for field in required_fields:
 
                     if not data.get(field):
 
                         self.send_json({
-
                             "success": False,
-
                             "message":
-                                field.replace(
-                                    "_",
-                                    " "
-                                ).title()
+                                field.replace("_", " ").title()
                                 + " is required"
-
                         }, 400)
 
                         return
-
-
-                # =========================================
-                # GET VALUES
-                # =========================================
 
                 donor_id = str(
                     data["donor_id"]
@@ -635,43 +604,46 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                     data["food_name"]
                 ).strip()
 
+                food_category = str(
+                    data["food_category"]
+                ).strip()
+
                 quantity = str(
                     data["quantity"]
                 ).strip()
 
+                cooking_date = str(
+                    data["cooking_date"]
+                ).strip()
+
+                expiry_time = str(
+                    data["expiry_time"]
+                ).strip()
+
+                contact_number = str(
+                    data["contact_number"]
+                ).strip()
+
                 description = str(
-                    data.get(
-                        "description",
-                        ""
-                    )
+                    data.get("description", "")
                 ).strip()
 
-                pickup_time = str(
-                    data["pickup_time"]
-                ).strip()
+                food_image = str(
+                    data.get("food_image", "")
+                )
 
-
-                # =========================================
                 # CHECK DONOR ID
-                # =========================================
 
                 if not donor_id.startswith("DN"):
 
                     self.send_json({
-
                         "success": False,
-
-                        "message":
-                            "Invalid donor ID"
-
+                        "message": "Invalid donor ID"
                     }, 400)
 
                     return
 
-
-                # =========================================
                 # CONNECT DATABASE
-                # =========================================
 
                 conn = get_connection()
 
@@ -679,20 +651,20 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                     dictionary=True
                 )
 
-
-                # =========================================
                 # CHECK DONOR EXISTS
-                # =========================================
 
                 cursor.execute("""
-                    SELECT donor_id
+                    SELECT
+                        donor_id,
+                        resturaent_name,
+                        owner_name,
+                        address,
+                        city
                     FROM donor
                     WHERE donor_id = %s
                 """, (donor_id,))
 
-
                 donor = cursor.fetchone()
-
 
                 if not donor:
 
@@ -700,83 +672,62 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                     conn.close()
 
                     self.send_json({
-
                         "success": False,
-
-                        "message":
-                            "Donor not found"
-
+                        "message": "Donor not found"
                     }, 404)
 
                     return
 
-
-                # =========================================
                 # INSERT DONATION
-                # =========================================
 
                 cursor.execute("""
                     INSERT INTO donation
                     (
                         donor_id,
                         food_name,
+                        food_category,
                         quantity,
+                        cooking_date,
+                        expiry_time,
+                        contact_number,
                         description,
+                        food_image,
                         pickup_time,
                         status
                     )
                     VALUES
                     (
-                        %s,
-                        %s,
-                        %s,
-                        %s,
-                        %s,
-                        %s
+                        %s, %s, %s, %s, %s,
+                        %s, %s, %s, %s, %s, %s
                     )
                 """, (
-
                     donor_id,
-
                     food_name,
-
+                    food_category,
                     quantity,
-
+                    cooking_date,
+                    expiry_time,
+                    contact_number,
                     description,
-
-                    pickup_time,
-
+                    food_image,
+                    None,
                     "Pending"
-
                 ))
-
 
                 donation_id = cursor.lastrowid
 
-
                 conn.commit()
-
 
                 cursor.close()
                 conn.close()
 
-
-                # =========================================
-                # SUCCESS RESPONSE
-                # =========================================
-
                 self.send_json({
-
                     "success": True,
-
                     "message":
                         "Food donation submitted successfully",
-
                     "donation_id":
                         donation_id
-
                 })
-
 
             except Exception as e:
 
@@ -786,11 +737,8 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                 )
 
                 self.send_json({
-
                     "success": False,
-
                     "message": str(e)
-
                 }, 500)
 
             return
