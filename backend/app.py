@@ -1616,12 +1616,110 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                     dictionary=True
                 )
 
+                # =========================================
+                # ADMIN LOGIN
+                # =========================================
+
+                if userid.startswith("AD"):
+
+                    cursor.execute("""
+                        SELECT
+                            admin_id,
+                            admin_name,
+                            email,
+                            password
+                        FROM admin
+                        WHERE admin_id = %s
+                        AND admin_name = %s
+                        AND email = %s
+                    """, (
+                        userid,
+                        username,
+                        email
+                    ))
+
+                    admin = cursor.fetchone()
+
+                    stored_password = (
+                        admin.pop("password", None)
+                        if admin else None
+                    )
+
+                    if admin and verify_password(
+                        password,
+                        stored_password
+                    ):
+
+                        # Upgrade old plain-text password to a hash
+                        if not is_hashed(stored_password):
+
+                            cursor.execute(
+                                """
+                                UPDATE admin
+                                SET password = %s
+                                WHERE admin_id = %s
+                                """,
+                                (
+                                    hash_password(password),
+                                    admin["admin_id"]
+                                )
+                            )
+
+                            conn.commit()
+
+                        token = create_session(
+                            admin["admin_id"],
+                            "admin"
+                        )
+
+                        cursor.close()
+                        conn.close()
+
+                        self.send_json({
+
+                            "success": True,
+
+                            "message":
+                                "Admin Login Successful",
+
+                            "role":
+                                "admin",
+
+                            "token":
+                                token,
+
+                            "user_id":
+                                admin["admin_id"],
+
+                            "user":
+                                admin
+
+                        })
+
+                        return
+
+                    else:
+
+                        cursor.close()
+                        conn.close()
+
+                        self.send_json({
+
+                            "success": False,
+
+                            "message":
+                                "Admin details do not match. Please check Admin ID, Admin Name, Password and Email."
+
+                        }, 401)
+
+                        return
+
 
                 # =========================================
                 # DONOR LOGIN
                 # =========================================
 
-                if userid.startswith("DN"):
+                elif userid.startswith("DN"):
 
                     cursor.execute("""
                         SELECT
@@ -1806,7 +1904,7 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                         "success": False,
 
                         "message":
-                            "Invalid User ID. Use DN001 for Donor or RN001 for Receiver."
+                            "Invalid User ID. Use AD001 for Admin, DN001 for Donor or RN001 for Receiver."
 
                     }, 400)
 
