@@ -11,7 +11,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
         e.preventDefault();
 
-        const donorId = localStorage.getItem("user_id");
+        const donorId = localStorage.getItem("user_id") || sessionStorage.getItem("user_id");
+        const token = localStorage.getItem("token") ||
+            localStorage.getItem("session_token") ||
+            sessionStorage.getItem("token") ||
+            sessionStorage.getItem("session_token");
 
         if (!donorId) {
             alert("Please login first.");
@@ -42,7 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("expiryTime").value;
 
         const additionalNotes =
-            document.getElementById("additionalNotes").value.trim();
+            document.getElementById("additionalNotes")?.value.trim() || "";
 
         const imageInput =
             document.getElementById("foodImage");
@@ -59,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Convert image to Base64
         let foodImage = "";
 
-        if (imageInput.files.length > 0) {
+        if (imageInput?.files?.length > 0) {
 
             const file = imageInput.files[0];
 
@@ -114,7 +118,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     headers: {
                         "Content-Type": "application/json",
-                        "Authorization": "Bearer " + localStorage.getItem("token")
+                        "Authorization": "Bearer " + token
                     },
 
                     body: JSON.stringify(donationData)
@@ -127,7 +131,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (response.status === 401) {
                     localStorage.removeItem("user_id");
+                    localStorage.removeItem("user_role");
                     localStorage.removeItem("token");
+                    localStorage.removeItem("session_token");
+                    sessionStorage.removeItem("user_id");
+                    sessionStorage.removeItem("user_role");
+                    sessionStorage.removeItem("token");
+                    sessionStorage.removeItem("session_token");
                     alert("Your session has expired. Please log in again.");
                     window.location.href = "../login.html";
                     return;

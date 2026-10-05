@@ -81,10 +81,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (result.success) {
 
+                const receiverId = result.ngo_id || result.receiver_id;
+                if (!receiverId) {
+                    throw new Error("Registration succeeded but the server did not return the Receiver ID.");
+                }
+
                 alert(
                     "Registration Successful!\n\n" +
-                    "Your Receiver ID is: " +
-                    result.receiver_id
+                    "Your Receiver ID is: " + receiverId +
+                    "\n\nUse this ID and your password to log in."
                 );
 
 

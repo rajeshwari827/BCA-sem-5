@@ -25,7 +25,7 @@
 
         <a href="profile.html" class="active">👤 My Profile</a>
 
-        <a href="../login.html">🚪 Logout</a>
+        <a href="../login.html" id="logoutBtn">🚪 Logout</a>
 
     </div>
 
@@ -35,7 +35,7 @@
 
         <h1>NGO Profile</h1>
 
-        <p>View and manage your organization details.</p>
+        <p id="profileMessage">Loading your organization details...</p>
 
         <div class="profile-card">
 
@@ -52,61 +52,61 @@
                     <tr>
                         <td><strong>NGO Name</strong></td>
                         <td>:</td>
-                        <td>Helping Hands NGO</td>
+                        <td id="organizationName">—</td>
                     </tr>
 
                     <tr>
                         <td><strong>Registration No.</strong></td>
                         <td>:</td>
-                        <td>NGO2026001</td>
+                        <td id="receiverId">—</td>
                     </tr>
 
                     <tr>
                         <td><strong>Manager Name</strong></td>
                         <td>:</td>
-                        <td>Amit Patel</td>
+                        <td id="representativeName">—</td>
                     </tr>
 
                     <tr>
                         <td><strong>Email</strong></td>
                         <td>:</td>
-                        <td>helpinghands@gmail.com</td>
+                        <td id="email">—</td>
                     </tr>
 
                     <tr>
                         <td><strong>Phone</strong></td>
                         <td>:</td>
-                        <td>9876543210</td>
+                        <td id="phone">—</td>
                     </tr>
 
                     <tr>
                         <td><strong>Address</strong></td>
                         <td>:</td>
-                        <td>150 Ring Road</td>
+                        <td id="address">—</td>
                     </tr>
 
                     <tr>
                         <td><strong>City</strong></td>
                         <td>:</td>
-                        <td>Rajkot</td>
+                        <td id="city">—</td>
                     </tr>
 
                     <tr>
-                        <td><strong>State</strong></td>
+                        <td><strong>Organization Type</strong></td>
                         <td>:</td>
-                        <td>Gujarat</td>
+                        <td id="organizationType">—</td>
                     </tr>
 
                     <tr>
-                        <td><strong>Pincode</strong></td>
+                        <td><strong>Location</strong></td>
                         <td>:</td>
-                        <td>360005</td>
+                        <td id="location">—</td>
                     </tr>
 
                     <tr>
                         <td><strong>Registration Date</strong></td>
                         <td>:</td>
-                        <td>15 July 2026</td>
+                        <td id="createdAt">—</td>
                     </tr>
 
                 </table>
@@ -115,17 +115,9 @@
 
         </div>
 
-        <div class="button-group">
-
-            <button>Edit Profile</button>
-
-            <button>Change Password</button>
-
-            <button class="logout-btn">Logout</button>
-
-        </div>
-
     </div>
+
+    <script src="../js/receiver_profile.js?v=1"></script>
 
 </body>
 
