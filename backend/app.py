@@ -357,6 +357,48 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
             return
 
 
+        # =================================================
+        # RECEIVER AVAILABLE FOOD
+        # =================================================
+
+        if self.path.startswith("/api/receiver/available"):
+            conn = None
+            cursor = None
+            try:
+                conn = get_connection()
+                cursor = conn.cursor(dictionary=True)
+                cursor.execute("""
+                    SELECT
+                        d.donation_id,
+                        d.food_name,
+                        d.food_category,
+                        d.quantity,
+                        d.cooking_date,
+                        d.expiry_time,
+                        d.status,
+                        d.created_at,
+                        donor.resturaent_name AS restaurant,
+                        donor.city,
+                        donor.address AS pickup_address,
+                        COALESCE(NULLIF(d.contact_number, ''), donor.phone) AS contact
+                    FROM donation AS d
+                    JOIN donor ON donor.donor_id = d.donor_id
+                    WHERE LOWER(d.status) = 'pending'
+                    ORDER BY d.created_at DESC
+                """)
+                donations = cursor.fetchall()
+                self.send_json({"success": True, "donations": donations})
+            except Exception as e:
+                print("AVAILABLE FOOD ERROR:", e)
+                self.send_json({"success": False, "message": str(e)}, 500)
+            finally:
+                if cursor:
+                    cursor.close()
+                if conn:
+                    conn.close()
+            return
+
+
 
         # =================================================
         # DONOR DASHBOARD
@@ -1461,6 +1503,9 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                         "Receiver registration successful",
 
                     "ngo_id":
+                        ngo_id,
+
+                    "receiver_id":
                         ngo_id
 
                 })

@@ -88,8 +88,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 alert(
                     "Registration Successful!\n\n" +
-                    "Your Receiver ID is: " + receiverId +
-                    "\n\nUse this ID and your password to log in."
+                    "Registration ID (Receiver ID): " + receiverId +
+                    "\n\nKeep this ID. Use it with your password to log in."
                 );
 
 
