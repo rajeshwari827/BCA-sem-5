@@ -13,16 +13,12 @@
 
     <div class="sidebar">
 
-        <h2>HungerFree</h2>
+        <h2>🍽 HungerFree</h2>
 
         <a href="donor_dashboard.html">🏠 Dashboard</a>
-
         <a href="donor_food.html" class="active">🍱 Donate Food</a>
-
         <a href="donation_history.html">📜 Donation History</a>
-
         <a href="profile.html">👤 My Profile</a>
-
         <a href="../login.html">🚪 Logout</a>
 
     </div>
@@ -35,109 +31,133 @@
 
         <form id="donationForm">
 
-            <!-- Food Name & Category -->
             <div class="form-row">
 
                 <div class="form-group">
-                    <label>Food Name</label>
+                    <label for="foodName">Food Name</label>
+
                     <input
                         type="text"
                         id="foodName"
                         placeholder="Rice, Dal, Bread..."
-                        required>
+                        required
+                    >
                 </div>
 
+
                 <div class="form-group">
-                    <label>Food Category</label>
+
+                    <label for="foodCategory">
+                        Food Category
+                    </label>
 
                     <select id="foodCategory" required>
-                        <option value="">Select Category</option>
-                        <option value="Veg">Veg</option>
-                        <option value="Non-Veg">Non-Veg</option>
-                        <option value="Packed Food">Packed Food</option>
-                        <option value="Bakery">Bakery</option>
-                        <option value="Beverages">Beverages</option>
-                        <option value="Others">Others</option>
+
+                        <option value="">
+                            Select Category
+                        </option>
+
+                        <option value="Veg">
+                            Veg
+                        </option>
+
+                        <option value="Non-Veg">
+                            Non-Veg
+                        </option>
+
+                        <option value="Packed Food">
+                            Packed Food
+                        </option>
+
+                        <option value="Bakery">
+                            Bakery
+                        </option>
+
+                        <option value="Beverages">
+                            Beverages
+                        </option>
+
+                        <option value="Others">
+                            Others
+                        </option>
+
                     </select>
 
                 </div>
 
             </div>
 
-            <!-- Quantity & Cooking Date -->
+
             <div class="form-row">
 
                 <div class="form-group">
-                    <label>Quantity</label>
+
+                    <label for="quantity">
+                        Quantity
+                    </label>
 
                     <input
                         type="text"
                         id="quantity"
                         placeholder="20 Kg / 50 Packets"
-                        required>
+                        required
+                    >
+
                 </div>
 
+
                 <div class="form-group">
-                    <label>Cooking Date</label>
+
+                    <label for="cookingDate">
+                        Cooking Date
+                    </label>
 
                     <input
                         type="date"
                         id="cookingDate"
-                        required>
+                        required
+                    >
+
                 </div>
 
             </div>
 
-            <!-- Expiry Time -->
+
             <div class="form-row">
 
                 <div class="form-group">
-                    <label>Expiry Time</label>
+
+                    <label for="expiryTime">
+                        Expiry Time
+                    </label>
 
                     <input
                         type="time"
                         id="expiryTime"
-                        required>
+                        required
+                    >
+
                 </div>
 
             </div>
 
-            <!-- Additional Notes -->
-            <div class="form-group">
 
-                <label>Additional Notes</label>
-
-                <textarea
-                    id="additionalNotes"
-                    rows="4"
-                    placeholder="Any special instructions (Optional)"></textarea>
-
-            </div>
-
-            <!-- Food Image -->
-            <div class="form-group">
-
-                <label>Upload Food Image</label>
-
-                <input
-                    type="file"
-                    id="foodImage"
-                    accept="image/*">
-
-            </div>
-
-            <!-- Buttons -->
             <div class="button-group">
 
-                <button type="submit">Donate Food</button>
+                <button type="submit">
+                    Donate Food
+                </button>
 
-                <button type="reset">Clear Form</button>
+                <button type="reset">
+                    Clear Form
+                </button>
 
             </div>
 
         </form>
 
     </div>
+
 
     <script src="../js/donor_food.js"></script>
 

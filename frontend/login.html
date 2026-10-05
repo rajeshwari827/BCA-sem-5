@@ -4,252 +4,884 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login for existing user</title>
-    <link rel="stylesheet" href="css/login.css">
 
+    <title>Login for existing user</title>
+
+    <link rel="stylesheet" href="css/login.css">
 </head>
 
 <body>
 
+    <div class="page">
+
+        <div class="navbar2">
+
+            <a href="index.html" class="nav-btn">
+                Home Page
+            </a>
+
+            <a href="donor_registration.html" class="nav-btn">
+                Food Donor
+            </a>
+
+            <a href="ngo_registration.html" class="nav-btn">
+                Food Receiver
+            </a>
+
+        </div>
+
+
+        <div class="login-box">
+
+            <form id="loginForm">
+
+                <h1>LOGIN FOR EXISTING USERS</h1>
+
+                <table>
+
+                    <tr>
+                        <td>
+                            User ID:
+
+                            <input
+                                type="text"
+                                id="userid"
+                                placeholder="Enter User ID"
+                                required
+                            >
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td>
+                            User Name:
+
+                            <input
+                                type="text"
+                                id="username"
+                                name="username"
+                                placeholder="Enter Username"
+                                required
+                            >
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td>
+                            Password:
+
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Enter Password"
+                                required
+                            >
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td>
+                            Email:
+
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="Enter Email ID"
+                                required
+                            >
+                        </td>
+                    </tr>
+
+                </table>
+
+
+                <h4>
+                    Not a user? Then register yourself first according to
+
+                    <a href="donor_registration.html">
+                        Food Donor
+                    </a>
+
+                    and
+
+                    <a href="ngo_registration.html">
+                        Food Receiver
+                    </a>
+                </h4>
+
+
+                <p
+                    id="loginError"
+                    style="color:red; text-align:center;"
+                ></p>
+
+
+                <button
+                    type="submit"
+                    id="loginButton"
+                >
+                    Submit
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                console.log("LOGIN JAVASCRIPT LOADED");
+
+
+                const loginForm =
+                    document.getElementById("loginForm");
+
+
+                if (!loginForm) {
+
+                    console.error(
+                        "loginForm was not found."
+                    );
+
+                    return;
+                }
+
+
+                loginForm.addEventListener(
+                    "submit",
+                    async function (event) {
+
+                        event.preventDefault();
+
+
+                        console.log(
+                            "LOGIN FORM SUBMITTED"
+                        );
+
+
+                        const userid =
+                            document
+                                .getElementById("userid")
+                                .value
+                                .trim()
+                                .toUpperCase();
+
+
+                        const username =
+                            document
+                                .getElementById("username")
+                                .value
+                                .trim();
+
+
+                        const password =
+                            document
+                                .getElementById("password")
+                                .value;
+
+
+                        const email =
+                            document
+                                .getElementById("email")
+                                .value
+                                .trim();
+
+
+                        const loginError =
+                            document.getElementById(
+                                "loginError"
+                            );
+
+
+                        // Clear old error
+                        loginError.textContent = "";
+
+
+                        // =========================
+                        // VALIDATION
+                        // =========================
+
+                        if (!userid) {
+
+                            showError(
+                                "Please enter User ID."
+                            );
+
+                            return;
+                        }
+
+
+                        if (!username) {
+
+                            showError(
+                                "Please enter User Name."
+                            );
+
+                            return;
+                        }
+
+
+                        if (!password) {
+
+                            showError(
+                                "Please enter Password."
+                            );
+
+                            return;
+                        }
+
+
+                        if (!email) {
+
+                            showError(
+                                "Please enter Email ID."
+                            );
+
+                            return;
+                        }
+
+
+                        // =========================
+                        // USER ID VALIDATION
+                        // =========================
+
+                        if (
+                            !userid.startsWith("DN") &&
+                            !userid.startsWith("RN")
+                        ) {
+
+                            showError(
+                                "Invalid User ID. Donor ID must start with DN and Receiver ID must start with RN."
+                            );
+
+                            return;
+                        }
+
+
+                        // =========================
+                        // SEND LOGIN REQUEST
+                        // =========================
+
+                        const loginData = {
+
+                            userid: userid,
+
+                            username: username,
+
+                            password: password,
+
+                            email: email
+
+                        };
+
+
+                        console.log(
+                            "Sending login data:",
+                            loginData
+                        );
+
+
+                        try {
+
+                            const response =
+                                await fetch(
+                                    "/api/login",
+                                    {
+                                        method: "POST",
+
+                                        headers: {
+                                            "Content-Type":
+                                                "application/json"
+                                        },
+
+                                        body:
+                                            JSON.stringify(
+                                                loginData
+                                            )
+                                    }
+                                );
+
+
+                            console.log(
+                                "Login response status:",
+                                response.status
+                            );
+
+
+                            const result =
+                                await response.json();
+
+
+                            console.log(
+                                "Login response:",
+                                result
+                            );
+
+
+                            // =========================
+                            // LOGIN SUCCESS
+                            // =========================
+
+                            if (result.success) {
+
+                                localStorage.setItem(
+                                    "user_id",
+                                    result.user_id ||
+                                    userid
+                                );
+
+
+                                localStorage.setItem(
+                                    "user_role",
+                                    result.role || ""
+                                );
+
+
+                                alert(
+                                    "Login successful!"
+                                );
+
+
+                                // DONOR
+                                if (
+                                    result.role ===
+                                    "donor"
+                                ) {
+
+                                    window.location.href =
+                                        "donor/donor_dashboard.html";
+
+                                    return;
+                                }
+
+
+                                // RECEIVER
+                                if (
+                                    result.role ===
+                                    "receiver"
+                                ) {
+
+                                    window.location.href =
+                                        "receiver/receiver_dashboard.html";
+
+                                    return;
+                                }
+
+
+                                showError(
+                                    "Login successful, but user role was not recognized."
+                                );
+
+                                return;
+                            }
+
+
+                            // =========================
+                            // LOGIN FAILED
+                            // =========================
+
+                            showError(
+                                result.message ||
+                                "The entered details do not match our records."
+                            );
+
+                        }
+
+
+                        catch (error) {
+
+                            console.error(
+                                "LOGIN ERROR:",
+                                error
+                            );
+
+
+                            showError(
+                                "Cannot connect to server. Please make sure app.py is running."
+                            );
+
+                        }
+
+                    }
+                );
+
+
+                // =========================
+                // ERROR FUNCTION
+                // =========================
+
+                function showError(message) {
+
+                    const errorBox =
+                        document.getElementById(
+                            "loginError"
+                        );
+
+
+                    errorBox.textContent =
+                        message;
+
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html><!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login for existing user</title>
+
+    <link rel="stylesheet" href="css/login.css">
+</head>
+
+<body>
 
     <div class="page">
 
         <div class="navbar2">
-            <a href="index.html" class="nav-btn">Home Page</a>
-            <a href="donor_registration.html" class="nav-btn">Food Donor</a>
-            <a href="ngo_registration.html" class="nav-btn">Food Receiver</a>
+
+            <a href="index.html" class="nav-btn">
+                Home Page
+            </a>
+
+            <a href="donor_registration.html" class="nav-btn">
+                Food Donor
+            </a>
+
+            <a href="ngo_registration.html" class="nav-btn">
+                Food Receiver
+            </a>
+
         </div>
 
+
         <div class="login-box">
+
             <form id="loginForm">
+
+                <h1>LOGIN FOR EXISTING USERS</h1>
+
                 <table>
-                    <h1>LOGIN FOR EXISTING USERS</h1>
 
                     <tr>
                         <td>
-                            User ID:<input type="text" id="userid" placeholder="Enter User ID" required>
+                            User ID:
 
+                            <input
+                                type="text"
+                                id="userid"
+                                placeholder="Enter User ID"
+                                required
+                            >
                         </td>
                     </tr>
+
+
                     <tr>
-                        <td>User Name: <input type="text" id="username" name="username" placeholder="Enter Username"
-                                required>
+                        <td>
+                            User Name:
+
+                            <input
+                                type="text"
+                                id="username"
+                                name="username"
+                                placeholder="Enter Username"
+                                required
+                            >
                         </td>
                     </tr>
+
+
                     <tr>
-                        <td>Password: <input type="password" id="password" name="password" placeholder="Enter Password"
-                                required>
+                        <td>
+                            Password:
+
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Enter Password"
+                                required
+                            >
                         </td>
                     </tr>
+
+
                     <tr>
-                        <td>Email: <input type="email" id="Email:" name="Email:" placeholder="Enter Email ID" required>
+                        <td>
+                            Email:
+
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="Enter Email ID"
+                                required
+                            >
                         </td>
                     </tr>
+
                 </table>
 
-                <h4>Not a user ? Then register yourself first according to <a href="donor_registration.html">Food
-                        Donor</a>
-                    and <a href="ngo_registration.html">Food Reciver</a> </h4>
 
-                <!-- Error message will appear here -->
-                <p id="loginError" style="color: red; text-align: center;"></p>
+                <h4>
+                    Not a user? Then register yourself first according to
 
-                <button>Submit</button>
+                    <a href="donor_registration.html">
+                        Food Donor
+                    </a>
+
+                    and
+
+                    <a href="ngo_registration.html">
+                        Food Receiver
+                    </a>
+                </h4>
+
+
+                <p
+                    id="loginError"
+                    style="color:red; text-align:center;"
+                ></p>
+
+
+                <button
+                    type="submit"
+                    id="loginButton"
+                >
+                    Submit
+                </button>
+
             </form>
+
         </div>
+
     </div>
 
+
     <script>
-    document.getElementById("loginForm").addEventListener("submit", async function (e) {
 
-        e.preventDefault();
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
 
-        const userid = document.getElementById("userid").value.trim().toUpperCase();
-        const username = document.getElementById("username").value.trim();
-        const password = document.getElementById("password").value;
-        const email = document.getElementById("Email:").value.trim();
-
-        const loginError = document.getElementById("loginError");
-
-        // Clear previous error
-        if (loginError) {
-            loginError.textContent = "";
-        }
-
-        // ==========================================
-        // CHECK EMPTY FIELDS
-        // ==========================================
-
-        if (!userid) {
-            showError("Please enter User ID.");
-            return;
-        }
-
-        if (!username) {
-            showError("Please enter User Name.");
-            return;
-        }
-
-        if (!password) {
-            showError("Please enter Password.");
-            return;
-        }
-
-        if (!email) {
-            showError("Please enter Email ID.");
-            return;
-        }
+                console.log("LOGIN JAVASCRIPT LOADED");
 
 
-        // ==========================================
-        // CHECK USER ID FORMAT
-        // ==========================================
-
-        if (
-            !userid.startsWith("DN") &&
-            !userid.startsWith("RN")
-        ) {
-            showError(
-                "Invalid User ID. Donor ID must start with DN and Receiver ID must start with RN."
-            );
-            return;
-        }
+                const loginForm =
+                    document.getElementById("loginForm");
 
 
-        try {
+                if (!loginForm) {
 
-            const response = await fetch("/api/login", {
-
-                method: "POST",
-
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
-                body: JSON.stringify({
-
-                    userid: userid,
-
-                    username: username,
-
-                    password: password,
-
-                    email: email
-
-                })
-
-            });
-
-
-            const result = await response.json();
-
-            console.log("Login response:", result);
-
-
-            // ==========================================
-            // LOGIN SUCCESS
-            // ==========================================
-
-            if (result.success) {
-
-                localStorage.setItem(
-                    "user_id",
-                    result.user_id || userid
-                );
-
-                localStorage.setItem(
-                    "user_role",
-                    result.role
-                );
-
-
-                // ======================================
-                // DONOR DASHBOARD
-                // ======================================
-
-                if (result.role === "donor") {
-
-                    window.location.href =
-                        "donor/donor_dashboard.html";
-
-                    return;
-                }
-
-
-                // ======================================
-                // RECEIVER DASHBOARD
-                // ======================================
-
-                if (result.role === "receiver") {
-
-                    window.location.href =
-                        "receiver/receiver_dashboard.html";
-
-                    return;
-                }
-
-            }
-
-
-            // ==========================================
-            // LOGIN FAILED
-            // ==========================================
-
-            showError(
-                result.message ||
-                "The entered details do not match our records."
-            );
-
-        }
-
-
-        catch (error) {
-
-            console.error(
-                "Login Error:",
-                error
-            );
-
-            showError(
-                "Cannot connect to server. Please make sure app.py is running."
-            );
-
-        }
-
-
-        // ==========================================
-        // DISPLAY ERROR IN FORM
-        // ==========================================
-
-        function showError(message) {
-
-            let errorBox =
-                document.getElementById("loginError");
-
-            if (!errorBox) {
-
-                errorBox =
-                    document.createElement("p");
-
-                errorBox.id = "loginError";
-
-                errorBox.style.color = "red";
-
-                errorBox.style.textAlign = "center";
-
-                document
-                    .getElementById("loginForm")
-                    .insertBefore(
-                        errorBox,
-                        document.querySelector("#loginForm button")
+                    console.error(
+                        "loginForm was not found."
                     );
+
+                    return;
+                }
+
+
+                loginForm.addEventListener(
+                    "submit",
+                    async function (event) {
+
+                        event.preventDefault();
+
+
+                        console.log(
+                            "LOGIN FORM SUBMITTED"
+                        );
+
+
+                        const userid =
+                            document
+                                .getElementById("userid")
+                                .value
+                                .trim()
+                                .toUpperCase();
+
+
+                        const username =
+                            document
+                                .getElementById("username")
+                                .value
+                                .trim();
+
+
+                        const password =
+                            document
+                                .getElementById("password")
+                                .value;
+
+
+                        const email =
+                            document
+                                .getElementById("email")
+                                .value
+                                .trim();
+
+
+                        const loginError =
+                            document.getElementById(
+                                "loginError"
+                            );
+
+
+                        // Clear old error
+                        loginError.textContent = "";
+
+
+                        // =========================
+                        // VALIDATION
+                        // =========================
+
+                        if (!userid) {
+
+                            showError(
+                                "Please enter User ID."
+                            );
+
+                            return;
+                        }
+
+
+                        if (!username) {
+
+                            showError(
+                                "Please enter User Name."
+                            );
+
+                            return;
+                        }
+
+
+                        if (!password) {
+
+                            showError(
+                                "Please enter Password."
+                            );
+
+                            return;
+                        }
+
+
+                        if (!email) {
+
+                            showError(
+                                "Please enter Email ID."
+                            );
+
+                            return;
+                        }
+
+
+                        // =========================
+                        // USER ID VALIDATION
+                        // =========================
+
+                        if (
+                            !userid.startsWith("DN") &&
+                            !userid.startsWith("RN")
+                        ) {
+
+                            showError(
+                                "Invalid User ID. Donor ID must start with DN and Receiver ID must start with RN."
+                            );
+
+                            return;
+                        }
+
+
+                        // =========================
+                        // SEND LOGIN REQUEST
+                        // =========================
+
+                        const loginData = {
+
+                            userid: userid,
+
+                            username: username,
+
+                            password: password,
+
+                            email: email
+
+                        };
+
+
+                        console.log(
+                            "Sending login data:",
+                            loginData
+                        );
+
+
+                        try {
+
+                            const response =
+                                await fetch(
+                                    "/api/login",
+                                    {
+                                        method: "POST",
+
+                                        headers: {
+                                            "Content-Type":
+                                                "application/json"
+                                        },
+
+                                        body:
+                                            JSON.stringify(
+                                                loginData
+                                            )
+                                    }
+                                );
+
+
+                            console.log(
+                                "Login response status:",
+                                response.status
+                            );
+
+
+                            const result =
+                                await response.json();
+
+
+                            console.log(
+                                "Login response:",
+                                result
+                            );
+
+
+                            // =========================
+                            // LOGIN SUCCESS
+                            // =========================
+
+                            if (result.success) {
+
+                                localStorage.setItem(
+                                    "user_id",
+                                    result.user_id ||
+                                    userid
+                                );
+
+
+                                localStorage.setItem(
+                                    "user_role",
+                                    result.role || ""
+                                );
+
+
+                                alert(
+                                    "Login successful!"
+                                );
+
+
+                                // DONOR
+                                if (
+                                    result.role ===
+                                    "donor"
+                                ) {
+
+                                    window.location.href =
+                                        "donor/donor_dashboard.html";
+
+                                    return;
+                                }
+
+
+                                // RECEIVER
+                                if (
+                                    result.role ===
+                                    "receiver"
+                                ) {
+
+                                    window.location.href =
+                                        "receiver/receiver_dashboard.html";
+
+                                    return;
+                                }
+
+
+                                showError(
+                                    "Login successful, but user role was not recognized."
+                                );
+
+                                return;
+                            }
+
+
+                            // =========================
+                            // LOGIN FAILED
+                            // =========================
+
+                            showError(
+                                result.message ||
+                                "The entered details do not match our records."
+                            );
+
+                        }
+
+
+                        catch (error) {
+
+                            console.error(
+                                "LOGIN ERROR:",
+                                error
+                            );
+
+
+                            showError(
+                                "Cannot connect to server. Please make sure app.py is running."
+                            );
+
+                        }
+
+                    }
+                );
+
+
+                // =========================
+                // ERROR FUNCTION
+                // =========================
+
+                function showError(message) {
+
+                    const errorBox =
+                        document.getElementById(
+                            "loginError"
+                        );
+
+
+                    errorBox.textContent =
+                        message;
+
+                }
+
             }
+        );
 
-            errorBox.textContent = message;
-        }
+    </script>
 
-    });
-</script>
 </body>
 
 </html>

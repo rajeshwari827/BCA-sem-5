@@ -7,25 +7,22 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    donationForm.addEventListener("submit", async function (e) {
+    donationForm.addEventListener("submit", async function (event) {
 
-        e.preventDefault();
+        event.preventDefault();
+
+        console.log("DONATION FORM SUBMITTED");
 
         const donorId = localStorage.getItem("user_id");
 
+        console.log("Donor ID:", donorId);
+
         if (!donorId) {
-            alert("Please login first.");
+            alert("Donor login session not found. Please login again.");
             window.location.href = "../login.html";
             return;
         }
 
-        if (!donorId.toUpperCase().startsWith("DN")) {
-            alert("Invalid donor login.");
-            window.location.href = "../login.html";
-            return;
-        }
-
-        // Get form values
         const foodName =
             document.getElementById("foodName").value.trim();
 
@@ -41,46 +38,41 @@ document.addEventListener("DOMContentLoaded", function () {
         const expiryTime =
             document.getElementById("expiryTime").value;
 
-        const additionalNotes =
-            document.getElementById("additionalNotes").value.trim();
 
-        const imageInput =
-            document.getElementById("foodImage");
+        // =========================
+        // VALIDATION
+        // =========================
 
+        if (!foodName) {
+            alert("Please enter food name.");
+            return;
+        }
 
-        // Validate category
         if (!foodCategory) {
-            alert("Please select a food category.");
-            document.getElementById("foodCategory").focus();
+            alert("Please select food category.");
+            return;
+        }
+
+        if (!quantity) {
+            alert("Please enter quantity.");
+            return;
+        }
+
+        if (!cookingDate) {
+            alert("Please select cooking date.");
+            return;
+        }
+
+        if (!expiryTime) {
+            alert("Please select expiry time.");
             return;
         }
 
 
-        // Convert image to Base64
-        let foodImage = "";
+        // =========================
+        // DONATION DATA
+        // =========================
 
-        if (imageInput.files.length > 0) {
-
-            const file = imageInput.files[0];
-
-            foodImage = await new Promise(function (resolve, reject) {
-
-                const reader = new FileReader();
-
-                reader.onload = function () {
-                    resolve(reader.result);
-                };
-
-                reader.onerror = function () {
-                    reject(new Error("Unable to read image."));
-                };
-
-                reader.readAsDataURL(file);
-            });
-        }
-
-
-        // Data sent to Python backend
         const donationData = {
 
             donor_id: donorId,
@@ -93,17 +85,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
             cooking_date: cookingDate,
 
-            expiry_time: expiryTime,
+            expiry_time: expiryTime
 
-            // Your current form does not have a contact number field.
-            // Send donor phone through backend if required.
-            contact_number: "",
-
-            description: additionalNotes,
-
-            food_image: foodImage
         };
 
+
+        console.log(
+            "Sending donation:",
+            donationData
+        );
+
+
+        // =========================
+        // SEND TO PYTHON BACKEND
+        // =========================
 
         try {
 
@@ -121,39 +116,70 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
+            console.log(
+                "Server response status:",
+                response.status
+            );
+
+
             const result = await response.json();
 
 
+            console.log(
+                "Server response:",
+                result
+            );
+
+
+            // =========================
+            // SUCCESS
+            // =========================
+
             if (result.success) {
 
-                alert("Food donation submitted successfully.");
+                alert(
+                    "Food donation submitted successfully."
+                );
 
                 donationForm.reset();
 
-                // Go directly to donation history
                 window.location.href =
                     "donation_history.html";
 
-            } else {
+            }
+
+
+            // =========================
+            // ERROR FROM BACKEND
+            // =========================
+
+            else {
 
                 alert(
                     result.message ||
                     "Unable to submit food donation."
                 );
+
             }
 
+        }
 
-        } catch (error) {
+
+        // =========================
+        // CONNECTION ERROR
+        // =========================
+
+        catch (error) {
 
             console.error(
-                "Donation Error:",
+                "DONATION ERROR:",
                 error
             );
 
             alert(
-                "Cannot connect to the server. " +
-                "Please make sure the Python backend is running."
+                "Cannot connect to server. Please make sure app.py is running."
             );
+
         }
 
     });
