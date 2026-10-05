@@ -115,15 +115,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
             }
 
+            else if (result.role === "admin") {
+
+                window.location.href =
+                    "admin/admin_dashboard.html";
+
+            }
             else {
 
                 localStorage.removeItem("token");
                 localStorage.removeItem("user_role");
                 localStorage.removeItem("user_id");
-                alert("Login successful, but the account role is not recognized.");
+
+                alert(
+                    "Login successful, but the account role is not recognized."
+                );
 
             }
-
         }
 
         catch (error) {
