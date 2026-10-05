@@ -311,6 +311,52 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
             return
 
 
+        # =================================================
+        # RECEIVER PROFILE
+        # =================================================
+
+        if self.path.startswith("/api/receiver/profile"):
+            conn = None
+            cursor = None
+            try:
+                conn = get_connection()
+                cursor = conn.cursor(dictionary=True)
+                cursor.execute("""
+                    SELECT
+                        ngo_id,
+                        organization_name,
+                        organization_type,
+                        representative_name,
+                        email,
+                        phone,
+                        address,
+                        city,
+                        location,
+                        created_at
+                    FROM ngos
+                    WHERE ngo_id = %s
+                """, (user["user_id"],))
+                receiver = cursor.fetchone()
+
+                if not receiver:
+                    self.send_json({
+                        "success": False,
+                        "message": "Receiver not found"
+                    }, 404)
+                    return
+
+                self.send_json({"success": True, "receiver": receiver})
+            except Exception as e:
+                print("RECEIVER PROFILE ERROR:", e)
+                self.send_json({"success": False, "message": str(e)}, 500)
+            finally:
+                if cursor:
+                    cursor.close()
+                if conn:
+                    conn.close()
+            return
+
+
 
         # =================================================
         # DONOR DASHBOARD
