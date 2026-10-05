@@ -69,171 +69,189 @@
     </header>
 
 
-    <!-- Title -->
 
-    <section class="welcome">
+    <!-- Main Content -->
 
-        <h2>
-            User Feedback
-        </h2>
-
-        <p>
-            View feedback submitted by donors and NGOs to improve
-            the HungerFree system.
-        </p>
-
-    </section>
+    <main>
 
 
-    <!-- Search -->
+        <!-- Page Title -->
 
-    <section class="search-box">
+        <section class="welcome">
 
-        <input type="text" id="searchFeedback" placeholder="Search User">
-
-
-        <select id="roleFilter">
-
-            <option value="">
-                All Users
-            </option>
-
-            <option value="Donor">
-                Donor
-            </option>
-
-            <option value="NGO">
-                NGO
-            </option>
-
-        </select>
-
-
-        <button id="searchBtn">
-            Search
-        </button>
-
-    </section>
-
-
-    <!-- Feedback Table -->
-
-    <section class="table-section">
-
-        <table>
-
-            <thead>
-
-                <tr>
-
-                    <th>
-                        Feedback ID
-                    </th>
-
-                    <th>
-                        User Name
-                    </th>
-
-                    <th>
-                        Role
-                    </th>
-
-                    <th>
-                        Rating
-                    </th>
-
-                    <th>
-                        Feedback
-                    </th>
-
-                    <th>
-                        Date
-                    </th>
-
-                    <th>
-                        Action
-                    </th>
-
-                </tr>
-
-            </thead>
-
-
-            <tbody id="feedbackTableBody">
-
-                <tr>
-
-                    <td colspan="7">
-                        No feedback available.
-                    </td>
-
-                </tr>
-
-            </tbody>
-
-        </table>
-
-    </section>
-
-
-    <!-- Summary Cards -->
-
-    <section class="card-container">
-
-
-        <div class="card">
-
-            <h2 id="totalFeedback">
-                0
+            <h2>
+                User Feedback
             </h2>
 
             <p>
-                Total Feedback
+                View feedback submitted by donors and NGOs to improve
+                the HungerFree system.
             </p>
 
-        </div>
+        </section>
 
 
-        <div class="card">
 
-            <h2 id="donorFeedback">
-                0
+        <!-- Search -->
+
+        <section class="search-box">
+
+            <input type="text" id="searchFeedback" placeholder="Search User">
+
+
+            <select id="roleFilter">
+
+                <option value="">
+                    All Users
+                </option>
+
+                <option value="Donor">
+                    Donor
+                </option>
+
+                <option value="NGO">
+                    NGO
+                </option>
+
+            </select>
+
+
+            <button id="searchBtn">
+                Search
+            </button>
+
+        </section>
+
+
+
+        <!-- Feedback Table -->
+
+        <section class="table-section">
+
+            <h2>
+                Feedback Records
             </h2>
 
-            <p>
-                From Donors
-            </p>
 
-        </div>
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Feedback ID
+                        </th>
+
+                        <th>
+                            User Name
+                        </th>
+
+                        <th>
+                            Role
+                        </th>
+
+                        <th>
+                            Rating
+                        </th>
+
+                        <th>
+                            Feedback
+                        </th>
+
+                        <th>
+                            Date
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
 
 
-        <div class="card">
+                <tbody id="feedbackTableBody">
 
-            <h2 id="ngoFeedback">
-                0
-            </h2>
+                    <tr>
 
-            <p>
-                From NGOs
-            </p>
+                        <td colspan="7">
+                            No feedback available.
+                        </td>
 
-        </div>
+                    </tr>
 
+                </tbody>
 
-        <div class="card">
+            </table>
 
-            <h2 id="averageRating">
-                0 ★
-            </h2>
-
-            <p>
-                Average Rating
-            </p>
-
-        </div>
+        </section>
 
 
-    </section>
+
+        <!-- Summary -->
+
+        <section class="card-container">
+
+
+            <div class="card">
+
+                <h2 id="totalFeedback">
+                    0
+                </h2>
+
+                <p>
+                    Total Feedback
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <h2 id="donorFeedback">
+                    0
+                </h2>
+
+                <p>
+                    From Donors
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <h2 id="ngoFeedback">
+                    0
+                </h2>
+
+                <p>
+                    From NGOs
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <h2 id="averageRating">
+                    0 ★
+                </h2>
+
+                <p>
+                    Average Rating
+                </p>
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
 
 
     <!-- Footer -->
@@ -245,6 +263,7 @@
         </p>
 
     </footer>
+
 
 
     <script src="../js/feedback.js"></script>
