@@ -566,6 +566,195 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
 
 
         # =================================================
+        # DONOR REGISTRATION
+        # =================================================
+
+        if self.path == "/api/donor/register":
+
+            try:
+
+                required_fields = [
+                    "restaurant_name",
+                    "owner_name",
+                    "email",
+                    "phone",
+                    "address",
+                    "city",
+                    "password",
+                    "confirm_password",
+                    "location"
+                ]
+
+                for field in required_fields:
+
+                    if not data.get(field):
+
+                        self.send_json({
+                            "success": False,
+                            "message":
+                                field.replace(
+                                    "_",
+                                    " "
+                                ).title()
+                                + " is required"
+                        }, 400)
+
+                        return
+
+                # =========================================
+                # PASSWORD CHECK
+                # =========================================
+
+                if (
+                    data["password"]
+                    != data["confirm_password"]
+                ):
+
+                    self.send_json({
+                        "success": False,
+                        "message":
+                            "Passwords do not match"
+                    }, 400)
+
+                    return
+
+                conn = get_connection()
+
+                cursor = conn.cursor(
+                    dictionary=True
+                )
+
+                # =========================================
+                # CHECK EMAIL
+                # =========================================
+
+                cursor.execute("""
+                    SELECT donor_id
+                    FROM donor
+                    WHERE email = %s
+                """, (data["email"],))
+
+                existing = cursor.fetchone()
+
+                if existing:
+
+                    cursor.close()
+                    conn.close()
+
+                    self.send_json({
+                        "success": False,
+                        "message":
+                            "Email already registered"
+                    }, 400)
+
+                    return
+
+                # =========================================
+                # GENERATE DONOR ID
+                # =========================================
+
+                cursor.execute("""
+                    SELECT donor_id
+                    FROM donor
+                    ORDER BY donor_id DESC
+                    LIMIT 1
+                """)
+
+                last_donor = cursor.fetchone()
+
+                if last_donor:
+
+                    try:
+
+                        last_number = int(
+                            last_donor["donor_id"][2:]
+                        )
+
+                    except:
+
+                        last_number = 0
+
+                else:
+
+                    last_number = 0
+
+                donor_id = "DN{:03d}".format(
+                    last_number + 1
+                )
+
+                # =========================================
+                # INSERT DONOR
+                # =========================================
+
+                cursor.execute("""
+                    INSERT INTO donor
+                    (
+                        donor_id,
+                        resturaent_name,
+                        owner_name,
+                        email,
+                        phone,
+                        address,
+                        city,
+                        password,
+                        confirm_password,
+                        location
+                    )
+                    VALUES
+                    (
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s
+                    )
+                """, (
+                    donor_id,
+                    data["restaurant_name"],
+                    data["owner_name"],
+                    data["email"],
+                    data["phone"],
+                    data["address"],
+                    data["city"],
+                    data["password"],
+                    data["confirm_password"],
+                    data["location"]
+                ))
+
+                conn.commit()
+
+                cursor.close()
+                conn.close()
+
+                self.send_json({
+                    "success": True,
+                    "message":
+                        "Donor registration successful",
+                    "donor_id":
+                        donor_id
+                })
+
+            except Exception as e:
+
+                print(
+                    "DONOR REGISTRATION ERROR:",
+                    e
+                )
+
+                self.send_json({
+                    "success": False,
+                    "message": str(e)
+                }, 500)
+
+            return
+
+
+        # =================================================
         # DONOR FOOD DONATION
         # =================================================
 
@@ -579,8 +768,7 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                     "food_category",
                     "quantity",
                     "cooking_date",
-                    "expiry_time",
-                    "contact_number"
+                    "expiry_time"
                 ]
 
                 for field in required_fields:
@@ -590,7 +778,10 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                         self.send_json({
                             "success": False,
                             "message":
-                                field.replace("_", " ").title()
+                                field.replace(
+                                    "_",
+                                    " "
+                                ).title()
                                 + " is required"
                         }, 400)
 
@@ -620,19 +811,12 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                     data["expiry_time"]
                 ).strip()
 
-                contact_number = str(
-                    data["contact_number"]
-                ).strip()
+                description = ""
+                food_image = ""
 
-                description = str(
-                    data.get("description", "")
-                ).strip()
-
-                food_image = str(
-                    data.get("food_image", "")
-                )
-
+                # =========================================
                 # CHECK DONOR ID
+                # =========================================
 
                 if not donor_id.startswith("DN"):
 
@@ -643,7 +827,9 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
 
                     return
 
+                # =========================================
                 # CONNECT DATABASE
+                # =========================================
 
                 conn = get_connection()
 
@@ -651,13 +837,16 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                     dictionary=True
                 )
 
+                # =========================================
                 # CHECK DONOR EXISTS
+                # =========================================
 
                 cursor.execute("""
                     SELECT
                         donor_id,
                         resturaent_name,
                         owner_name,
+                        phone,
                         address,
                         city
                     FROM donor
@@ -678,7 +867,15 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
 
                     return
 
+                # Contact number is taken automatically
+                # from donor registration.
+                contact_number = str(
+                    donor.get("phone", "") or ""
+                ).strip()
+
+                # =========================================
                 # INSERT DONATION
+                # =========================================
 
                 cursor.execute("""
                     INSERT INTO donation
@@ -697,8 +894,17 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                     )
                     VALUES
                     (
-                        %s, %s, %s, %s, %s,
-                        %s, %s, %s, %s, %s, %s
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s
                     )
                 """, (
                     donor_id,
@@ -739,239 +945,6 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                 self.send_json({
                     "success": False,
                     "message": str(e)
-                }, 500)
-
-            return
-
-
-        # =================================================
-        # DONOR REGISTRATION
-        # =================================================
-
-        if self.path == "/api/donor/register":
-
-            try:
-
-                required_fields = [
-
-                    "restaurant_name",
-                    "owner_name",
-                    "email",
-                    "phone",
-                    "address",
-                    "city",
-                    "password",
-                    "confirm_password",
-                    "location"
-
-                ]
-
-
-                for field in required_fields:
-
-                    if not data.get(field):
-
-                        self.send_json({
-
-                            "success": False,
-
-                            "message":
-                                field.replace(
-                                    "_",
-                                    " "
-                                ).title()
-                                + " is required"
-
-                        }, 400)
-
-                        return
-
-
-                # =========================================
-                # PASSWORD CHECK
-                # =========================================
-
-                if (
-                    data["password"]
-                    != data["confirm_password"]
-                ):
-
-                    self.send_json({
-
-                        "success": False,
-
-                        "message":
-                            "Passwords do not match"
-
-                    }, 400)
-
-                    return
-
-
-                conn = get_connection()
-
-                cursor = conn.cursor(
-                    dictionary=True
-                )
-
-
-                # =========================================
-                # CHECK EMAIL
-                # =========================================
-
-                cursor.execute("""
-                    SELECT donor_id
-                    FROM donor
-                    WHERE email = %s
-                """, (data["email"],))
-
-
-                existing = cursor.fetchone()
-
-
-                if existing:
-
-                    cursor.close()
-                    conn.close()
-
-                    self.send_json({
-
-                        "success": False,
-
-                        "message":
-                            "Email already registered"
-
-                    }, 400)
-
-                    return
-
-
-                # =========================================
-                # GENERATE DONOR ID
-                # =========================================
-
-                cursor.execute("""
-                    SELECT donor_id
-                    FROM donor
-                    ORDER BY donor_id DESC
-                    LIMIT 1
-                """)
-
-
-                last_donor = cursor.fetchone()
-
-
-                if last_donor:
-
-                    try:
-
-                        last_number = int(
-                            last_donor["donor_id"][2:]
-                        )
-
-                    except:
-
-                        last_number = 0
-
-                else:
-
-                    last_number = 0
-
-
-                donor_id = "DN{:03d}".format(
-                    last_number + 1
-                )
-
-
-                # =========================================
-                # INSERT DONOR
-                # =========================================
-
-                cursor.execute("""
-                    INSERT INTO donor
-                    (
-                        donor_id,
-                        resturaent_name,
-                        owner_name,
-                        email,
-                        phone,
-                        address,
-                        city,
-                        password,
-                        confirm_password,
-                        location
-                    )
-                    VALUES
-                    (
-                        %s,
-                        %s,
-                        %s,
-                        %s,
-                        %s,
-                        %s,
-                        %s,
-                        %s,
-                        %s,
-                        %s
-                    )
-                """, (
-
-                    donor_id,
-
-                    data["restaurant_name"],
-
-                    data["owner_name"],
-
-                    data["email"],
-
-                    data["phone"],
-
-                    data["address"],
-
-                    data["city"],
-
-                    data["password"],
-
-                    data["confirm_password"],
-
-                    data["location"]
-
-                ))
-
-
-                conn.commit()
-
-
-                cursor.close()
-                conn.close()
-
-
-                self.send_json({
-
-                    "success": True,
-
-                    "message":
-                        "Donor registration successful",
-
-                    "donor_id":
-                        donor_id
-
-                })
-
-
-            except Exception as e:
-
-                print(
-                    "DONOR REGISTRATION ERROR:",
-                    e
-                )
-
-                self.send_json({
-
-                    "success": False,
-
-                    "message": str(e)
-
                 }, 500)
 
             return
@@ -1224,9 +1197,7 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
         # =================================================
 
         if self.path == "/api/login":
-
             try:
-
                 # =========================================
                 # GET LOGIN DATA
                 # =========================================
@@ -1247,68 +1218,50 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                     data.get("email", "")
                 ).strip()
 
-
                 # =========================================
                 # CHECK EMPTY FIELDS
                 # =========================================
 
                 if not userid:
-
                     self.send_json({
                         "success": False,
                         "message": "Please enter User ID."
                     }, 400)
-
                     return
 
-
                 if not username:
-
                     self.send_json({
                         "success": False,
                         "message": "Please enter User Name."
                     }, 400)
-
                     return
 
-
                 if not password:
-
                     self.send_json({
                         "success": False,
                         "message": "Please enter Password."
                     }, 400)
-
                     return
 
-
                 if not email:
-
                     self.send_json({
                         "success": False,
                         "message": "Please enter Email ID."
                     }, 400)
-
                     return
-
 
                 # =========================================
                 # DATABASE CONNECTION
                 # =========================================
 
                 conn = get_connection()
-
-                cursor = conn.cursor(
-                    dictionary=True
-                )
-
+                cursor = conn.cursor(dictionary=True)
 
                 # =========================================
                 # DONOR LOGIN
                 # =========================================
 
                 if userid.startswith("DN"):
-
                     cursor.execute("""
                         SELECT
                             donor_id,
@@ -1316,9 +1269,9 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                             email,
                             resturaent_name
                         FROM donor
-                        WHERE donor_id = %s
-                        AND owner_name = %s
-                        AND email = %s
+                        WHERE UPPER(TRIM(donor_id)) = %s
+                        AND LOWER(TRIM(owner_name)) = LOWER(TRIM(%s))
+                        AND LOWER(TRIM(email)) = LOWER(TRIM(%s))
                         AND password = %s
                     """, (
                         userid,
@@ -1327,63 +1280,35 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                         password
                     ))
 
-
                     user = cursor.fetchone()
 
+                    cursor.close()
+                    conn.close()
 
                     if user:
-
-                        cursor.close()
-                        conn.close()
-
-
                         self.send_json({
-
                             "success": True,
-
-                            "message":
-                                "Login successful",
-
-                            "role":
-                                "donor",
-
-                            "user_id":
-                                user["donor_id"],
-
-                            "user":
-                                user
-
+                            "message": "Login successful",
+                            "role": "donor",
+                            "user_id": user["donor_id"],
+                            "user": user
                         })
-
-
-                        return
-
-
                     else:
-
-                        cursor.close()
-                        conn.close()
-
-
                         self.send_json({
-
                             "success": False,
-
-                            "message":
-                                "Donor details do not match. Please check User ID, User Name, Password and Email."
-
+                            "message": (
+                                "Donor details do not match. Please check "
+                                "User ID, User Name, Password and Email."
+                            )
                         }, 401)
 
-
-                        return
-
+                    return
 
                 # =========================================
                 # RECEIVER / NGO LOGIN
                 # =========================================
 
                 elif userid.startswith("RN"):
-
                     cursor.execute("""
                         SELECT
                             ngo_id,
@@ -1391,9 +1316,9 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                             email,
                             organization_name
                         FROM ngos
-                        WHERE ngo_id = %s
-                        AND representative_name = %s
-                        AND email = %s
+                        WHERE UPPER(TRIM(ngo_id)) = %s
+                        AND LOWER(TRIM(representative_name)) = LOWER(TRIM(%s))
+                        AND LOWER(TRIM(email)) = LOWER(TRIM(%s))
                         AND password = %s
                     """, (
                         userid,
@@ -1402,100 +1327,57 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                         password
                     ))
 
-
                     user = cursor.fetchone()
 
+                    cursor.close()
+                    conn.close()
 
                     if user:
-
-                        cursor.close()
-                        conn.close()
-
-
                         self.send_json({
-
                             "success": True,
-
-                            "message":
-                                "Login successful",
-
-                            "role":
-                                "receiver",
-
-                            "user_id":
-                                user["ngo_id"],
-
-                            "user":
-                                user
-
+                            "message": "Login successful",
+                            "role": "receiver",
+                            "user_id": user["ngo_id"],
+                            "user": user
                         })
-
-
-                        return
-
-
                     else:
-
-                        cursor.close()
-                        conn.close()
-
-
                         self.send_json({
-
                             "success": False,
-
-                            "message":
-                                "Receiver details do not match. Please check User ID, User Name, Password and Email."
-
+                            "message": (
+                                "Receiver details do not match. Please check "
+                                "User ID, User Name, Password and Email."
+                            )
                         }, 401)
 
-
-                        return
-
+                    return
 
                 # =========================================
                 # INVALID USER ID
                 # =========================================
 
                 else:
-
                     cursor.close()
                     conn.close()
 
-
                     self.send_json({
-
                         "success": False,
-
-                        "message":
-                            "Invalid User ID. Use DN001 for Donor or RN001 for Receiver."
-
+                        "message": (
+                            "Invalid User ID. Use DN001 for Donor or "
+                            "RN001 for Receiver."
+                        )
                     }, 400)
-
 
                     return
 
-
             except Exception as e:
-
-                print(
-                    "LOGIN ERROR:",
-                    e
-                )
-
+                print("LOGIN ERROR:", e)
 
                 self.send_json({
-
                     "success": False,
-
-                    "message":
-                        "Login error: " + str(e)
-
+                    "message": "Login error: " + str(e)
                 }, 500)
 
-
             return
-
 
         # =================================================
         # UNKNOWN API
