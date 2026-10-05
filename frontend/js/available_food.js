@@ -143,6 +143,12 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             if (!response.ok || !result.success) {
 
+                if (response.status === 404 && result.message === "API endpoint not found") {
+                    throw new Error(
+                        "The running backend is an older version. Stop it and start the updated backend/app.py, then log in again."
+                    );
+                }
+
                 throw new Error(
                     result.message || "Unable to accept food."
                 );
@@ -150,7 +156,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
 
 
-            alert("Food accepted successfully!");
+            alert(result.message || "Food accepted successfully!");
 
 
             // Remove accepted food from current list

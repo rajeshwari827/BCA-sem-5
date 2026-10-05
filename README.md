@@ -67,3 +67,18 @@ The project can be completed within the allocated academic timeline by following
 * Version Control: Git
 * Repository Hosting: GitHub
 * Web Browser: Google Chrome or Microsoft Edge
+
+## Acceptance Email Notifications
+
+After a receiver accepts a donation, the backend sends a confirmation to the receiver and an acceptance notice to the donor. Configure SMTP in the same PowerShell window before starting the backend. Use SMTP credentials issued by your email provider; do not commit the password to the project.
+
+```powershell
+$env:SMTP_HOST = "your-smtp-host"
+$env:SMTP_PORT = "587"
+$env:SMTP_USERNAME = "your-sender-email"
+$env:SMTP_PASSWORD = "your-smtp-password"
+$env:SMTP_FROM = "your-sender-email"
+python app.py
+```
+
+Port `587` uses STARTTLS; port `465` uses SSL. Acceptance is still saved if SMTP is not configured, and the page reports that the emails could not be sent.

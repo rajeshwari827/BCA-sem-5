@@ -8,6 +8,7 @@ from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 
 from db import get_connection
+from util.email_notifications import send_acceptance_emails
 
 
 HOST = "localhost"
@@ -390,6 +391,48 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                 self.send_json({"success": True, "donations": donations})
             except Exception as e:
                 print("AVAILABLE FOOD ERROR:", e)
+                self.send_json({"success": False, "message": str(e)}, 500)
+            finally:
+                if cursor:
+                    cursor.close()
+                if conn:
+                    conn.close()
+            return
+
+
+        # =================================================
+        # RECEIVER ACCEPTED DONATIONS
+        # =================================================
+
+        if self.path.startswith("/api/receiver/accepted"):
+            conn = None
+            cursor = None
+            try:
+                conn = get_connection()
+                cursor = conn.cursor(dictionary=True)
+                cursor.execute("""
+                    SELECT
+                        d.donation_id,
+                        d.food_name,
+                        d.quantity,
+                        d.status,
+                        d.accepted_at,
+                        COALESCE(p.pickup_time, d.pickup_time) AS pickup_time,
+                        donor.resturaent_name AS restaurant,
+                        COALESCE(NULLIF(d.contact_number, ''), donor.phone) AS contact
+                    FROM donation AS d
+                    JOIN donor ON donor.donor_id = d.donor_id
+                    LEFT JOIN pickup_request AS p
+                        ON p.donation_id = d.donation_id
+                       AND p.ngo_id = %s
+                    WHERE d.ngo_id = %s
+                      AND LOWER(d.status) IN ('accepted', 'approved', 'picked up', 'collected', 'completed')
+                    ORDER BY d.accepted_at DESC, d.created_at DESC
+                """, (user["user_id"], user["user_id"]))
+                donations = cursor.fetchall()
+                self.send_json({"success": True, "donations": donations})
+            except Exception as e:
+                print("RECEIVER ACCEPTED DONATIONS ERROR:", e)
                 self.send_json({"success": False, "message": str(e)}, 500)
             finally:
                 if cursor:
@@ -868,6 +911,152 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
                 "message": "Logged out"
             })
 
+            return
+
+
+        # =================================================
+        # RECEIVER ACCEPTS A DONATION
+        # =================================================
+
+        if self.path == "/api/receiver/accept":
+            user = self.require_role("receiver")
+            if not user:
+                return
+
+            try:
+                donation_id = int(data.get("donation_id"))
+                if donation_id <= 0:
+                    raise ValueError
+            except (TypeError, ValueError):
+                self.send_json({
+                    "success": False,
+                    "message": "A valid donation ID is required."
+                }, 400)
+                return
+
+            conn = None
+            cursor = None
+            try:
+                conn = get_connection()
+                conn.start_transaction()
+                cursor = conn.cursor(dictionary=True)
+                cursor.execute("""
+                    SELECT donation_id, status
+                    FROM donation
+                    WHERE donation_id = %s
+                    FOR UPDATE
+                """, (donation_id,))
+                donation = cursor.fetchone()
+
+                if not donation:
+                    conn.rollback()
+                    self.send_json({"success": False, "message": "Donation not found."}, 404)
+                    return
+
+                if str(donation["status"]).strip().lower() != "pending":
+                    conn.rollback()
+                    self.send_json({
+                        "success": False,
+                        "message": "This donation is no longer available. Refresh the list."
+                    }, 409)
+                    return
+
+                cursor.execute("""
+                    SELECT
+                        d.donation_id,
+                        d.food_name,
+                        d.quantity,
+                        donor.resturaent_name,
+                        donor.email,
+                        donor.phone,
+                        donor.address
+                    FROM donation AS d
+                    JOIN donor ON donor.donor_id = d.donor_id
+                    WHERE d.donation_id = %s
+                """, (donation_id,))
+                donation_details = cursor.fetchone()
+
+                cursor.execute("""
+                    SELECT ngo_id, organization_name, representative_name, email, phone
+                    FROM ngos
+                    WHERE ngo_id = %s
+                """, (user["user_id"],))
+                receiver_details = cursor.fetchone()
+
+                if not donation_details or not receiver_details:
+                    conn.rollback()
+                    self.send_json({
+                        "success": False,
+                        "message": "Donation or receiver account details could not be found."
+                    }, 404)
+                    return
+
+                cursor.execute("""
+                    INSERT INTO pickup_request (donation_id, ngo_id, status)
+                    VALUES (%s, %s, 'Accepted')
+                """, (donation_id, user["user_id"]))
+                cursor.execute("""
+                    UPDATE donation
+                    SET ngo_id = %s, status = 'Accepted', accepted_at = NOW()
+                    WHERE donation_id = %s AND LOWER(status) = 'pending'
+                """, (user["user_id"], donation_id))
+
+                if cursor.rowcount != 1:
+                    conn.rollback()
+                    self.send_json({
+                        "success": False,
+                        "message": "This donation was accepted by another receiver. Refresh the list."
+                    }, 409)
+                    return
+
+                conn.commit()
+
+                cursor.close()
+                cursor = None
+                conn.close()
+                conn = None
+
+                email_results = send_acceptance_emails(
+                    donation_details,
+                    {
+                        "resturaent_name": donation_details["resturaent_name"],
+                        "email": donation_details["email"],
+                        "phone": donation_details["phone"],
+                        "address": donation_details["address"]
+                    },
+                    receiver_details
+                )
+                for recipient, result in email_results.items():
+                    if not result["sent"]:
+                        print(
+                            "ACCEPTANCE EMAIL NOT SENT TO {}: {}".format(
+                                recipient, result.get("reason", "Unknown error")
+                            )
+                        )
+
+                all_emails_sent = all(
+                    result["sent"] for result in email_results.values()
+                )
+                self.send_json({
+                    "success": True,
+                    "message": (
+                        "Food accepted successfully. Email notifications sent."
+                        if all_emails_sent
+                        else "Food accepted successfully, but email notifications could not be sent. Check SMTP settings."
+                    ),
+                    "donation_id": donation_id,
+                    "email_notifications": email_results
+                })
+            except Exception as e:
+                if conn:
+                    conn.rollback()
+                print("RECEIVER ACCEPT ERROR:", e)
+                self.send_json({"success": False, "message": str(e)}, 500)
+            finally:
+                if cursor:
+                    cursor.close()
+                if conn:
+                    conn.close()
             return
 
 
