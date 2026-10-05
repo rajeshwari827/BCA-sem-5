@@ -7,22 +7,25 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    donationForm.addEventListener("submit", async function (event) {
+    donationForm.addEventListener("submit", async function (e) {
 
-        event.preventDefault();
-
-        console.log("DONATION FORM SUBMITTED");
+        e.preventDefault();
 
         const donorId = localStorage.getItem("user_id");
 
-        console.log("Donor ID:", donorId);
-
         if (!donorId) {
-            alert("Donor login session not found. Please login again.");
+            alert("Please login first.");
             window.location.href = "../login.html";
             return;
         }
 
+        if (!donorId.toUpperCase().startsWith("DN")) {
+            alert("Invalid donor login.");
+            window.location.href = "../login.html";
+            return;
+        }
+
+        // Get form values
         const foodName =
             document.getElementById("foodName").value.trim();
 
@@ -38,41 +41,46 @@ document.addEventListener("DOMContentLoaded", function () {
         const expiryTime =
             document.getElementById("expiryTime").value;
 
+        const additionalNotes =
+            document.getElementById("additionalNotes").value.trim();
 
-        // =========================
-        // VALIDATION
-        // =========================
+        const imageInput =
+            document.getElementById("foodImage");
 
-        if (!foodName) {
-            alert("Please enter food name.");
-            return;
-        }
 
+        // Validate category
         if (!foodCategory) {
-            alert("Please select food category.");
-            return;
-        }
-
-        if (!quantity) {
-            alert("Please enter quantity.");
-            return;
-        }
-
-        if (!cookingDate) {
-            alert("Please select cooking date.");
-            return;
-        }
-
-        if (!expiryTime) {
-            alert("Please select expiry time.");
+            alert("Please select a food category.");
+            document.getElementById("foodCategory").focus();
             return;
         }
 
 
-        // =========================
-        // DONATION DATA
-        // =========================
+        // Convert image to Base64
+        let foodImage = "";
 
+        if (imageInput.files.length > 0) {
+
+            const file = imageInput.files[0];
+
+            foodImage = await new Promise(function (resolve, reject) {
+
+                const reader = new FileReader();
+
+                reader.onload = function () {
+                    resolve(reader.result);
+                };
+
+                reader.onerror = function () {
+                    reject(new Error("Unable to read image."));
+                };
+
+                reader.readAsDataURL(file);
+            });
+        }
+
+
+        // Data sent to Python backend
         const donationData = {
 
             donor_id: donorId,
@@ -85,20 +93,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
             cooking_date: cookingDate,
 
-            expiry_time: expiryTime
+            expiry_time: expiryTime,
 
+            // Your current form does not have a contact number field.
+            // Send donor phone through backend if required.
+            contact_number: "",
+
+            description: additionalNotes,
+
+            food_image: foodImage
         };
 
-
-        console.log(
-            "Sending donation:",
-            donationData
-        );
-
-
-        // =========================
-        // SEND TO PYTHON BACKEND
-        // =========================
 
         try {
 
@@ -108,7 +113,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     method: "POST",
 
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + localStorage.getItem("token")
                     },
 
                     body: JSON.stringify(donationData)
@@ -116,72 +122,51 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-            console.log(
-                "Server response status:",
-                response.status
-            );
-
-
             const result = await response.json();
 
 
-            console.log(
-                "Server response:",
-                result
-            );
+                if (response.status === 401) {
+                    localStorage.removeItem("user_id");
+                    localStorage.removeItem("token");
+                    alert("Your session has expired. Please log in again.");
+                    window.location.href = "../login.html";
+                    return;
+                }
 
 
-            // =========================
-            // SUCCESS
-            // =========================
 
             if (result.success) {
 
-                alert(
-                    "Food donation submitted successfully."
-                );
+                alert("Food donation submitted successfully.");
 
                 donationForm.reset();
 
+                // Go directly to donation history
                 window.location.href =
                     "donation_history.html";
 
-            }
-
-
-            // =========================
-            // ERROR FROM BACKEND
-            // =========================
-
-            else {
+            } else {
 
                 alert(
                     result.message ||
                     "Unable to submit food donation."
                 );
-
             }
 
-        }
 
-
-        // =========================
-        // CONNECTION ERROR
-        // =========================
-
-        catch (error) {
+        } catch (error) {
 
             console.error(
-                "DONATION ERROR:",
+                "Donation Error:",
                 error
             );
 
             alert(
-                "Cannot connect to server. Please make sure app.py is running."
+                "Cannot connect to the server. " +
+                "Please make sure the Python backend is running."
             );
-
         }
 
     });
 
-});
+});

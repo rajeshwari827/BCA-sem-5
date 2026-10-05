@@ -12,19 +12,23 @@ document.addEventListener("DOMContentLoaded", function () {
         e.preventDefault();
 
         const useridInput = document.getElementById("userid");
+        const usernameInput = document.getElementById("username");
         const passwordInput = document.getElementById("password");
+        const emailInput = document.getElementById("email");
 
         const userid = useridInput.value.trim().toUpperCase();
+        const username = usernameInput.value.trim();
         const password = passwordInput.value.trim();
+        const email = emailInput.value.trim();
 
 
         // ==========================================
         // VALIDATION
         // ==========================================
 
-        if (!userid || !password) {
+        if (!userid || !username || !password || !email) {
 
-            alert("Please enter User ID and Password.");
+            alert("Please enter User ID, User Name, Password, and Email.");
 
             return;
         }
@@ -43,7 +47,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 body: JSON.stringify({
 
                     userid: userid,
-                    password: password
+                    username: username,
+                    password: password,
+                    email: email
 
                 })
 
@@ -72,10 +78,17 @@ document.addEventListener("DOMContentLoaded", function () {
             // SAVE LOGIN ID
             // ==========================================
 
-            localStorage.setItem(
-                "user_id",
-                userid
-            );
+            if (!result.token || !result.role || !result.user_id) {
+                throw new Error("Login response is missing session information.");
+            }
+
+            localStorage.setItem("user_id", result.user_id);
+            localStorage.setItem("user_role", result.role);
+            localStorage.setItem("token", result.token);
+            localStorage.setItem("session_token", result.token);
+            sessionStorage.setItem("user_id", result.user_id);
+            sessionStorage.setItem("user_role", result.role);
+            sessionStorage.setItem("token", result.token);
 
 
             console.log(
@@ -88,23 +101,26 @@ document.addEventListener("DOMContentLoaded", function () {
             // REDIRECT
             // ==========================================
 
-            if (userid.startsWith("DN")) {
+            if (result.role === "donor") {
 
                 window.location.href =
-                    "/donor/donor_dashboard.html";
+                    "donor/donor_dashboard.html";
 
             }
 
-            else if (userid.startsWith("RN")) {
+            else if (result.role === "receiver") {
 
                 window.location.href =
-                    "/receiver/receiver_dashboard.html";
+                    "receiver/receiver_dashboard.html";
 
             }
 
             else {
 
-                alert("Invalid User ID format.");
+                localStorage.removeItem("token");
+                localStorage.removeItem("user_role");
+                localStorage.removeItem("user_id");
+                alert("Login successful, but the account role is not recognized.");
 
             }
 

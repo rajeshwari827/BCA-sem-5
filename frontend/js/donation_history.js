@@ -31,10 +31,20 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         const response = await fetch(
             "/api/donor/donations?donor_id=" +
-            encodeURIComponent(donorId)
+            encodeURIComponent(donorId),
+            { headers: { "Authorization": "Bearer " + localStorage.getItem("token") } }
         );
 
         const result = await response.json();
+
+        if (response.status === 401) {
+            localStorage.removeItem("user_id");
+            localStorage.removeItem("token");
+            alert("Your session has expired. Please log in again.");
+            window.location.href = "../login.html";
+            return;
+        }
+
 
         if (!result.success) {
 
@@ -84,7 +94,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     if (logoutBtn) {
         logoutBtn.addEventListener("click", function () {
+            fetch("/api/logout", { method: "POST", keepalive: true, headers: { "Content-Type": "application/json", "Authorization": "Bearer " + localStorage.getItem("token") }, body: "{}" });
             localStorage.removeItem("user_id");
+            localStorage.removeItem("token");
         });
     }
 
@@ -252,4 +264,4 @@ document.addEventListener("DOMContentLoaded", async function () {
         renderTable(filtered);
     }
 
-});
+});

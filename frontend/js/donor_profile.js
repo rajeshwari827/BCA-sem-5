@@ -1,196 +1,110 @@
 document.addEventListener("DOMContentLoaded", async function () {
 
-    // Get logged-in user ID
     const donorId = localStorage.getItem("user_id");
+    const token = localStorage.getItem("token");
 
-    // If nobody is logged in
-    if (!donorId) {
-
+    if (!donorId || !token) {
         alert("Please login first.");
-
-        window.location.href = "../login.html";
-
+        window.location.replace("../login.html");
         return;
     }
 
-
-    // Make sure this is a donor
     if (!donorId.toUpperCase().startsWith("DN")) {
-
         alert("Invalid donor login.");
-
-        window.location.href = "../login.html";
-
+        window.location.replace("../login.html");
         return;
     }
-
 
     try {
-
-        const response = await fetch(
-            "/api/donor/profile?donor_id=" +
-            encodeURIComponent(donorId)
-        );
-
+        const response = await fetch("/api/donor/profile", {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Accept": "application/json"
+            },
+            cache: "no-store"
+        });
 
         const result = await response.json();
 
-
-        if (result.success) {
-
-            const donor = result.donor;
-
-
-            document.getElementById("donor_id").textContent =
-                donor.donor_id || "-";
-
-
-            document.getElementById("restaurant_name").textContent =
-                donor.resturaent_name || "-";
-
-
-            document.getElementById("owner_name").textContent =
-                donor.owner_name || "-";
-
-
-            document.getElementById("email").textContent =
-                donor.email || "-";
-
-
-            document.getElementById("phone").textContent =
-                donor.phone || "-";
-
-
-            document.getElementById("address").textContent =
-                donor.address || "-";
-
-
-            document.getElementById("city").textContent =
-                donor.city || "-";
-
-
-            document.getElementById("location").textContent =
-                donor.location || "-";
-
-
-            if (donor.created_at) {
-
-                const date = new Date(
-                    donor.created_at
-                );
-
-                document.getElementById(
-                    "registration_date"
-                ).textContent =
-                    date.toLocaleDateString(
-                        "en-IN",
-                        {
-                            day: "2-digit",
-                            month: "long",
-                            year: "numeric"
-                        }
-                    );
-
-            }
-            else {
-
-                document.getElementById(
-                    "registration_date"
-                ).textContent = "-";
-
-            }
-
-        }
-        else {
-
-            alert(
-                "Unable to load profile:\n" +
-                result.message
-            );
-
+        if (response.status === 401) {
+            localStorage.removeItem("user_id");
+            localStorage.removeItem("user_role");
+            localStorage.removeItem("token");
+            alert("Your login session is no longer valid. Please log in again.");
+            window.location.replace("../login.html");
+            return;
         }
 
-    }
-    catch (error) {
+        if (!response.ok || !result.success) {
+            alert("Unable to load profile:\n" + (result.message || "Unknown server error."));
+            return;
+        }
 
-        console.error(
-            "Profile Error:",
-            error
-        );
+        const donor = result.donor || {};
 
-        alert(
-            "Cannot connect to the server.\n\n" +
-            "Please make sure the Python backend is running."
-        );
+        document.getElementById("donor_id").textContent = donor.donor_id || donorId;
+        document.getElementById("restaurant_name").textContent = donor.resturaent_name || "-";
+        document.getElementById("owner_name").textContent = donor.owner_name || "-";
+        document.getElementById("email").textContent = donor.email || "-";
+        document.getElementById("phone").textContent = donor.phone || "-";
+        document.getElementById("address").textContent = donor.address || "-";
+        document.getElementById("city").textContent = donor.city || "-";
+        document.getElementById("location").textContent = donor.location || "-";
 
+        document.getElementById("registration_date").textContent = donor.created_at
+            ? new Date(donor.created_at).toLocaleDateString("en-IN", {
+                day: "2-digit", month: "long", year: "numeric"
+            })
+            : "-";
+
+    } catch (error) {
+        console.error("Profile Error:", error);
+        alert("Cannot connect to the server.\n\nPlease make sure app.py is running.");
     }
 
-
-    // =====================================================
-    // LOGOUT
-    // =====================================================
-
-    document.getElementById(
-        "logoutBtn"
-    ).addEventListener(
-        "click",
-        function () {
-
-            localStorage.removeItem("user_id");
-
-            window.location.href =
-                "../login.html";
-
+    async function logout() {
+        const currentToken = localStorage.getItem("token");
+        try {
+            if (currentToken) {
+                await fetch("/api/logout", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + currentToken
+                    },
+                    body: "{}",
+                    keepalive: true
+                });
+            }
+        } catch (error) {
+            console.error("Logout Error:", error);
         }
-    );
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("user_role");
+        localStorage.removeItem("token");
+        window.location.replace("../login.html");
+    }
 
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) logoutBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        logout();
+    });
 
-    document.getElementById(
-        "sidebarLogout"
-    ).addEventListener(
-        "click",
-        function (e) {
+    const sidebarLogout = document.getElementById("sidebarLogout");
+    if (sidebarLogout) sidebarLogout.addEventListener("click", function (e) {
+        e.preventDefault();
+        logout();
+    });
 
-            e.preventDefault();
+    const editProfileBtn = document.getElementById("editProfileBtn");
+    if (editProfileBtn) editProfileBtn.addEventListener("click", function () {
+        alert("Edit Profile feature will be added next.");
+    });
 
-            localStorage.removeItem("user_id");
-
-            window.location.href =
-                "../login.html";
-
-        }
-    );
-
-
-    // =====================================================
-    // BUTTONS - TEMPORARY
-    // =====================================================
-
-    document.getElementById(
-        "editProfileBtn"
-    ).addEventListener(
-        "click",
-        function () {
-
-            alert(
-                "Edit Profile feature will be added next."
-            );
-
-        }
-    );
-
-
-    document.getElementById(
-        "changePasswordBtn"
-    ).addEventListener(
-        "click",
-        function () {
-
-            alert(
-                "Change Password feature will be added next."
-            );
-
-        }
-    );
-
+    const changePasswordBtn = document.getElementById("changePasswordBtn");
+    if (changePasswordBtn) changePasswordBtn.addEventListener("click", function () {
+        alert("Change Password feature will be added next.");
+    });
 });
