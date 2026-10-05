@@ -203,6 +203,113 @@ class FoodDonationServer(SimpleHTTPRequestHandler):
             if not user:
                 return
 
+        if self.path.startswith("/api/receiver/"):
+            user = self.require_role("receiver")
+            if not user:
+                return
+
+
+        # =================================================
+        # RECEIVER DASHBOARD
+        # =================================================
+
+        if self.path.startswith("/api/receiver/dashboard"):
+            conn = None
+            cursor = None
+            try:
+                receiver_id = user["user_id"]
+                conn = get_connection()
+                cursor = conn.cursor(dictionary=True)
+
+                cursor.execute("""
+                    SELECT organization_name
+                    FROM ngos
+                    WHERE ngo_id = %s
+                """, (receiver_id,))
+                receiver = cursor.fetchone()
+
+                if not receiver:
+                    self.send_json({
+                        "success": False,
+                        "message": "Receiver not found"
+                    }, 404)
+                    return
+
+                cursor.execute("""
+                    SELECT COUNT(*) AS total
+                    FROM donation
+                    WHERE LOWER(status) = 'pending'
+                """)
+                available = cursor.fetchone()["total"]
+
+                cursor.execute("""
+                    SELECT COUNT(*) AS total
+                    FROM donation
+                    WHERE ngo_id = %s
+                      AND LOWER(status) IN ('accepted', 'approved')
+                """, (receiver_id,))
+                accepted = cursor.fetchone()["total"]
+
+                cursor.execute("""
+                    SELECT COUNT(*) AS total
+                    FROM pickup_request
+                    WHERE ngo_id = %s
+                      AND pickup_time IS NOT NULL
+                      AND DATE(pickup_time) = CURDATE()
+                      AND LOWER(status) IN ('accepted', 'approved')
+                """, (receiver_id,))
+                today_pickups = cursor.fetchone()["total"]
+
+                cursor.execute("""
+                    SELECT COUNT(*) AS total
+                    FROM donation
+                    WHERE ngo_id = %s
+                      AND LOWER(status) IN ('picked up', 'collected', 'completed')
+                """, (receiver_id,))
+                completed = cursor.fetchone()["total"]
+
+                cursor.execute("""
+                    SELECT
+                        d.donation_id,
+                        d.food_name,
+                        d.food_category,
+                        d.quantity,
+                        d.status,
+                        d.created_at,
+                        donor.resturaent_name AS restaurant,
+                        donor.city
+                    FROM donation AS d
+                    JOIN donor ON donor.donor_id = d.donor_id
+                    WHERE LOWER(d.status) = 'pending'
+                    ORDER BY d.created_at DESC
+                    LIMIT 5
+                """)
+                donations = cursor.fetchall()
+
+                self.send_json({
+                    "success": True,
+                    "receiver": receiver,
+                    "stats": {
+                        "available": available,
+                        "accepted": accepted,
+                        "today_pickups": today_pickups,
+                        "completed": completed
+                    },
+                    "donations": donations
+                })
+            except Exception as e:
+                print("RECEIVER DASHBOARD ERROR:", e)
+                self.send_json({
+                    "success": False,
+                    "message": str(e)
+                }, 500)
+            finally:
+                if cursor:
+                    cursor.close()
+                if conn:
+                    conn.close()
+            return
+
 
 
         # =================================================
