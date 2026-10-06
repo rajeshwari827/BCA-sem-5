@@ -1,169 +1,95 @@
-// Notifications JavaScript
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("notificationForm").addEventListener("submit", createNotification);
+    loadNotifications();
+});
 
 let notifications = [];
 
+async function loadNotifications() {
+    try {
+        const response = await fetch("/api/admin/notifications", { cache: "no-store" });
+        const result = await response.json();
+        if (!response.ok || !result.success) throw new Error(result.message || "Unable to load notifications.");
+        notifications = result.notifications || [];
+        renderNotifications();
+        updateSummary();
+    } catch (error) {
+        console.error("Notification load error:", error);
+        document.getElementById("notificationTableBody").innerHTML =
+            `<tr><td colspan="6">${error.message}</td></tr>`;
+    }
+}
 
-// Notification Form
-const notificationForm = document.getElementById("notificationForm");
-
-notificationForm.addEventListener("submit", function (event) {
-
+async function createNotification(event) {
     event.preventDefault();
+    const form = event.currentTarget;
+    const button = form.querySelector("button[type='submit']");
+    button.disabled = true;
+    try {
+        const response = await fetch("/api/admin/notifications", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                title: document.getElementById("notificationTitle").value.trim(),
+                send_to: document.getElementById("sendTo").value,
+                message: document.getElementById("notificationMessage").value.trim()
+            })
+        });
+        const result = await response.json();
+        if (!response.ok || !result.success) throw new Error(result.message || "Unable to save notification.");
+        form.reset();
+        await loadNotifications();
+        alert("Notification saved.");
+    } catch (error) {
+        alert(error.message);
+    } finally {
+        button.disabled = false;
+    }
+}
 
-    // Get values from form
-    const title = document.getElementById("notificationTitle").value.trim();
-    const sendTo = document.getElementById("sendTo").value;
-    const message = document.getElementById("notificationMessage").value.trim();
-
-    // Check values
-    if (title === "" || sendTo === "" || message === "") {
-        alert("Please fill all the fields.");
+function renderNotifications() {
+    const body = document.getElementById("notificationTableBody");
+    body.replaceChildren();
+    if (!notifications.length) {
+        body.innerHTML = "<tr><td colspan='6'>No notifications available.</td></tr>";
         return;
     }
-
-    // Create notification
-    const notification = {
-        id: notifications.length + 1,
-        title: title,
-        sendTo: sendTo,
-        message: message,
-        date: new Date().toLocaleDateString("en-IN"),
-        status: "Sent"
-    };
-
-    // Add notification
-    notifications.push(notification);
-
-    // Update table
-    displayNotifications();
-
-    // Update cards
-    updateSummary();
-
-    // Clear form
-    notificationForm.reset();
-
-    alert("Notification sent successfully!");
-
-});
-
-
-// Display Notifications
-function displayNotifications() {
-
-    const tableBody = document.getElementById("notificationTableBody");
-
-    tableBody.innerHTML = "";
-
-    if (notifications.length === 0) {
-
-        tableBody.innerHTML = `
-            <tr>
-                <td colspan="6">
-                    No notifications available.
-                </td>
-            </tr>
-        `;
-
-        return;
-    }
-
-
     notifications.forEach(function (notification) {
-
-        const row = document.createElement("tr");
-
-        row.innerHTML = `
-            <td>${notification.id}</td>
-
-            <td>${notification.title}</td>
-
-            <td>${notification.sendTo}</td>
-
-            <td>${notification.date}</td>
-
-            <td>${notification.status}</td>
-
-            <td>
-                <button
-                    type="button"
-                    onclick="deleteNotification(${notification.id})">
-                    Delete
-                </button>
-            </td>
-        `;
-
-        tableBody.appendChild(row);
-
+        const row = body.insertRow();
+        [notification.id, notification.title, notification.sendTo,
+            notification.date ? new Date(notification.date).toLocaleDateString() : "-",
+            notification.status].forEach(value => { row.insertCell().textContent = value ?? "-"; });
+        const action = row.insertCell();
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = "Delete";
+        button.addEventListener("click", () => deleteNotification(notification.id));
+        action.appendChild(button);
     });
-
 }
 
-
-// Delete Notification
-function deleteNotification(id) {
-
-    const confirmDelete = confirm(
-        "Are you sure you want to delete this notification?"
-    );
-
-    if (!confirmDelete) {
-        return;
+async function deleteNotification(id) {
+    if (!confirm("Delete this notification?")) return;
+    try {
+        const response = await fetch("/api/admin/notifications/delete", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ notification_id: id })
+        });
+        const result = await response.json();
+        if (!response.ok || !result.success) throw new Error(result.message || "Unable to delete notification.");
+        await loadNotifications();
+    } catch (error) {
+        alert(error.message);
     }
-
-    notifications = notifications.filter(function (notification) {
-        return notification.id !== id;
-    });
-
-    // Reassign IDs
-    notifications.forEach(function (notification, index) {
-        notification.id = index + 1;
-    });
-
-    displayNotifications();
-
-    updateSummary();
-
 }
 
-
-// Update Summary Cards
 function updateSummary() {
-
-    // Total notifications
-    document.getElementById("totalNotifications").textContent =
-        notifications.length;
-
-
-    // Donor notifications
-    const donorCount = notifications.filter(function (notification) {
-        return notification.sendTo === "Food Donors";
-    }).length;
-
+    document.getElementById("totalNotifications").textContent = notifications.length;
     document.getElementById("donorNotifications").textContent =
-        donorCount;
-
-
-    // NGO notifications
-    const ngoCount = notifications.filter(function (notification) {
-        return notification.sendTo === "NGOs";
-    }).length;
-
+        notifications.filter(item => item.sendTo === "Food Donors").length;
     document.getElementById("ngoNotifications").textContent =
-        ngoCount;
-
-
-    // All user notifications
-    const allUserCount = notifications.filter(function (notification) {
-        return notification.sendTo === "All Users";
-    }).length;
-
+        notifications.filter(item => item.sendTo === "NGOs").length;
     document.getElementById("allUserNotifications").textContent =
-        allUserCount;
-
+        notifications.filter(item => item.sendTo === "All Users").length;
 }
-
-
-// Initial display
-displayNotifications();
-updateSummary();

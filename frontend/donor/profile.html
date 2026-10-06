@@ -7,7 +7,7 @@
 
     <title>My Profile | HungerFree</title>
 
-    <link rel="stylesheet" href="donor.css?v=2">
+    <link rel="stylesheet" href="donor.css?v=3">
 </head>
 
 <body>
@@ -41,13 +41,6 @@
 
 
         <div class="profile-card">
-
-            <div class="profile-image">
-
-                <img src="../images/profile.png" alt="Profile Picture">
-
-            </div>
-
 
             <div class="profile-details">
 
@@ -114,6 +107,45 @@
         </div>
 
 
+        <form id="editProfileForm" class="profile-action-form" hidden>
+            <h2>Edit Profile Details</h2>
+            <label for="editRestaurantName">Restaurant Name</label>
+            <input id="editRestaurantName" name="restaurant_name" maxlength="255" required>
+            <label for="editOwnerName">Owner Name</label>
+            <input id="editOwnerName" name="owner_name" maxlength="255" required>
+            <label for="editEmail">Email</label>
+            <input id="editEmail" name="email" type="email" maxlength="190" required>
+            <label for="editPhone">Phone Number</label>
+            <input id="editPhone" name="phone" type="tel" maxlength="30" required>
+            <label for="editAddress">Address</label>
+            <textarea id="editAddress" name="address" rows="3" required></textarea>
+            <label for="editCity">City</label>
+            <input id="editCity" name="city" maxlength="100" required>
+            <label for="editLocation">Location</label>
+            <textarea id="editLocation" name="location" rows="2" required></textarea>
+            <div class="profile-form-actions">
+                <button type="submit">Save Changes</button>
+                <button type="button" id="cancelEditProfile">Cancel</button>
+            </div>
+        </form>
+
+        <form id="changePasswordForm" class="profile-action-form" hidden>
+            <h2>Change Password</h2>
+            <label for="currentPassword">Current Password</label>
+            <input id="currentPassword" type="password" autocomplete="current-password" required>
+            <label for="newPassword">New Password</label>
+            <input id="newPassword" type="password" autocomplete="new-password" minlength="8" required>
+            <label for="confirmNewPassword">Confirm New Password</label>
+            <input id="confirmNewPassword" type="password" autocomplete="new-password" minlength="8" required>
+            <div class="profile-form-actions">
+                <button type="submit">Update Password</button>
+                <button type="button" id="cancelChangePassword">Cancel</button>
+            </div>
+        </form>
+
+        <p id="profileActionStatus" class="profile-action-status" role="status" aria-live="polite"></p>
+
+
         <div class="button-group">
 
             <button id="editProfileBtn">
@@ -133,7 +165,7 @@
     </div>
 
 
-    <script src="../js/donor_profile.js"></script>
+    <script src="../js/donor_profile.js?v=2"></script>
 
 </body>
 

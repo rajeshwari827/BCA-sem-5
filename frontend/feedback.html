@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Share Feedback | HungerFree</title>
+    <link rel="stylesheet" href="css/user-feedback.css">
+</head>
+<body>
+    <main class="feedback-card">
+        <a class="back-link" id="backLink" href="login.html">← Back</a>
+        <h1>Share your feedback</h1>
+        <p>Your comments help us improve HungerFree. Your account name and role are added automatically.</p>
+        <form id="feedbackForm">
+            <label for="rating">Your rating</label>
+            <select id="rating" name="rating" required>
+                <option value="5">5 — Excellent</option>
+                <option value="4">4 — Very good</option>
+                <option value="3">3 — Good</option>
+                <option value="2">2 — Needs improvement</option>
+                <option value="1">1 — Poor</option>
+            </select>
+            <label for="message">Your feedback</label>
+            <textarea id="message" name="message" maxlength="2000" rows="6" placeholder="Tell us about your experience…" required></textarea>
+            <div class="form-footer">
+                <span id="feedbackStatus" role="status" aria-live="polite"></span>
+                <button type="submit">Submit feedback</button>
+            </div>
+        </form>
+    </main>
+    <script src="js/user_feedback.js?v=1"></script>
+</body>
+</html>

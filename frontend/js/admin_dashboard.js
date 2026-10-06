@@ -9,15 +9,20 @@ async function loadDashboardData() {
 
     try {
 
-        const response = await fetch("/api/admin/dashboard");
+        const token = sessionStorage.getItem("token") ||
+            localStorage.getItem("token") ||
+            localStorage.getItem("session_token");
+        const headers = token ? { "Authorization": "Bearer " + token } : {};
+        const response = await fetch("/api/admin/dashboard", {
+            headers: headers,
+            cache: "no-store"
+        });
 
         const result = await response.json();
 
 
-        if (!result.success) {
-
-            alert(result.message || "Unable to load dashboard data.");
-
+        if (!response.ok || !result.success) {
+            setDashboardStatus(result.message || "Unable to load dashboard totals. Please sign in again.", true);
             return;
 
         }
@@ -35,14 +40,15 @@ async function loadDashboardData() {
 
         // Dashboard cards
 
-        document.getElementById("totalUsers").textContent =
-            result.total_users;
+        const donors = Number(result.total_donors) || 0;
+        const receivers = Number(result.total_receivers ?? result.total_ngos) || 0;
+        document.getElementById("totalUsers").textContent = donors + receivers;
 
         document.getElementById("totalDonors").textContent =
-            result.total_donors;
+            donors;
 
         document.getElementById("totalNGOs").textContent =
-            result.total_ngos;
+            receivers;
 
         document.getElementById("totalDonations").textContent =
             result.total_donations;
@@ -52,6 +58,8 @@ async function loadDashboardData() {
 
         document.getElementById("completedDonations").textContent =
             result.completed_donations;
+
+        setDashboardStatus("Totals updated from the latest database records.");
 
 
         // Recent activities
@@ -99,11 +107,14 @@ async function loadDashboardData() {
 
         console.error("Dashboard Error:", error);
 
-        alert(
-            "Cannot connect to the server.\n\n" +
-            "Please make sure the Python backend is running."
-        );
+        setDashboardStatus("Could not load totals. Check that the backend is running, then refresh this page.", true);
 
     }
 
+}
+
+function setDashboardStatus(message, isError = false) {
+    const status = document.getElementById("dashboardStatus");
+    status.textContent = message;
+    status.classList.toggle("error", isError);
 }

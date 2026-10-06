@@ -245,8 +245,11 @@ function viewUser(userId) {
 
 async function deleteUser(userId) {
 
-    const confirmDelete =
-        confirm("Are you sure you want to delete this user?");
+    const userIdPrefix = String(userId).toUpperCase();
+    const deleteMessage = userIdPrefix.startsWith("DN")
+        ? "Delete this donor and all donation records belonging to them?"
+        : "Delete this NGO and its pickup history? Donations will remain available.";
+    const confirmDelete = confirm(deleteMessage);
 
 
     if (!confirmDelete) {

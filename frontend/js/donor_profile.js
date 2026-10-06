@@ -1,3 +1,5 @@
+let currentDonorProfile = null;
+
 document.addEventListener("DOMContentLoaded", async function () {
 
     const donorId = localStorage.getItem("user_id");
@@ -41,22 +43,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
         }
 
-        const donor = result.donor || {};
-
-        document.getElementById("donor_id").textContent = donor.donor_id || donorId;
-        document.getElementById("restaurant_name").textContent = donor.resturaent_name || "-";
-        document.getElementById("owner_name").textContent = donor.owner_name || "-";
-        document.getElementById("email").textContent = donor.email || "-";
-        document.getElementById("phone").textContent = donor.phone || "-";
-        document.getElementById("address").textContent = donor.address || "-";
-        document.getElementById("city").textContent = donor.city || "-";
-        document.getElementById("location").textContent = donor.location || "-";
-
-        document.getElementById("registration_date").textContent = donor.created_at
-            ? new Date(donor.created_at).toLocaleDateString("en-IN", {
-                day: "2-digit", month: "long", year: "numeric"
-            })
-            : "-";
+        currentDonorProfile = result.donor || {};
+        renderDonorProfile(currentDonorProfile, donorId);
 
     } catch (error) {
         console.error("Profile Error:", error);
@@ -98,13 +86,129 @@ document.addEventListener("DOMContentLoaded", async function () {
         logout();
     });
 
-    const editProfileBtn = document.getElementById("editProfileBtn");
-    if (editProfileBtn) editProfileBtn.addEventListener("click", function () {
-        alert("Edit Profile feature will be added next.");
+    const editForm = document.getElementById("editProfileForm");
+    const passwordForm = document.getElementById("changePasswordForm");
+    const status = document.getElementById("profileActionStatus");
+
+    document.getElementById("editProfileBtn").addEventListener("click", function () {
+        const profile = currentDonorProfile || {};
+        document.getElementById("editRestaurantName").value = profile.resturaent_name || "";
+        document.getElementById("editOwnerName").value = profile.owner_name || "";
+        document.getElementById("editEmail").value = profile.email || "";
+        document.getElementById("editPhone").value = profile.phone || "";
+        document.getElementById("editAddress").value = profile.address || "";
+        document.getElementById("editCity").value = profile.city || "";
+        document.getElementById("editLocation").value = profile.location || "";
+        passwordForm.hidden = true;
+        editForm.hidden = false;
+        status.textContent = "";
     });
 
-    const changePasswordBtn = document.getElementById("changePasswordBtn");
-    if (changePasswordBtn) changePasswordBtn.addEventListener("click", function () {
-        alert("Change Password feature will be added next.");
+    document.getElementById("cancelEditProfile").addEventListener("click", function () {
+        editForm.hidden = true;
+    });
+
+    document.getElementById("changePasswordBtn").addEventListener("click", function () {
+        editForm.hidden = true;
+        passwordForm.reset();
+        passwordForm.hidden = false;
+        status.textContent = "";
+    });
+
+    document.getElementById("cancelChangePassword").addEventListener("click", function () {
+        passwordForm.hidden = true;
+    });
+
+    editForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+        const button = editForm.querySelector("button[type='submit']");
+        button.disabled = true;
+        status.classList.remove("error");
+        status.textContent = "Saving profile…";
+        try {
+            const payload = {
+                restaurant_name: document.getElementById("editRestaurantName").value.trim(),
+                owner_name: document.getElementById("editOwnerName").value.trim(),
+                email: document.getElementById("editEmail").value.trim(),
+                phone: document.getElementById("editPhone").value.trim(),
+                address: document.getElementById("editAddress").value.trim(),
+                city: document.getElementById("editCity").value.trim(),
+                location: document.getElementById("editLocation").value.trim()
+            };
+            const response = await fetch("/api/donor/profile/update", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+                body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+            if (!response.ok || !result.success) throw new Error(result.message || "Unable to save profile.");
+            currentDonorProfile = {
+                ...currentDonorProfile,
+                resturaent_name: payload.restaurant_name,
+                owner_name: payload.owner_name,
+                email: payload.email,
+                phone: payload.phone,
+                address: payload.address,
+                city: payload.city,
+                location: payload.location
+            };
+            renderDonorProfile(currentDonorProfile, donorId);
+            editForm.hidden = true;
+            status.textContent = result.message;
+        } catch (error) {
+            status.textContent = error.message;
+            status.classList.add("error");
+        } finally {
+            button.disabled = false;
+        }
+    });
+
+    passwordForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+        const currentPassword = document.getElementById("currentPassword").value;
+        const newPassword = document.getElementById("newPassword").value;
+        const confirmPassword = document.getElementById("confirmNewPassword").value;
+        if (newPassword !== confirmPassword) {
+            status.textContent = "New password and confirmation do not match.";
+            status.classList.add("error");
+            return;
+        }
+        const button = passwordForm.querySelector("button[type='submit']");
+        button.disabled = true;
+        status.classList.remove("error");
+        status.textContent = "Updating password…";
+        try {
+            const response = await fetch("/api/donor/password", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+                body: JSON.stringify({ current_password: currentPassword, new_password: newPassword })
+            });
+            const result = await response.json();
+            if (!response.ok || !result.success) throw new Error(result.message || "Unable to change password.");
+            passwordForm.reset();
+            passwordForm.hidden = true;
+            status.textContent = result.message;
+        } catch (error) {
+            status.textContent = error.message;
+            status.classList.add("error");
+        } finally {
+            button.disabled = false;
+        }
     });
 });
+
+function renderDonorProfile(donor, donorId) {
+    document.getElementById("donor_id").textContent = donor.donor_id || donorId;
+    document.getElementById("restaurant_name").textContent = donor.resturaent_name || "-";
+    document.getElementById("owner_name").textContent = donor.owner_name || "-";
+    document.getElementById("email").textContent = donor.email || "-";
+    document.getElementById("phone").textContent = donor.phone || "-";
+    document.getElementById("address").textContent = donor.address || "-";
+    document.getElementById("city").textContent = donor.city || "-";
+    document.getElementById("location").textContent = donor.location || "-";
+    document.getElementById("registration_date").textContent = donor.created_at
+        ? new Date(donor.created_at).toLocaleDateString("en-IN", {
+            day: "2-digit", month: "long", year: "numeric"
+        })
+        : "-";
+}

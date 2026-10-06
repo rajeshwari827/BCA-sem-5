@@ -36,12 +36,12 @@ async function loadReports() {
 
     try {
 
-        const response = await fetch("/api/admin/reports");
+        const response = await fetch("/api/admin/reports", { cache: "no-store" });
 
         const result = await response.json();
 
 
-        if (!result.success) {
+        if (!response.ok || !result.success) {
 
             alert(result.message || "Unable to load reports.");
 

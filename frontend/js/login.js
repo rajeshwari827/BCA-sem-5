@@ -7,6 +7,32 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
+    const loginInputs = ["userid", "username", "password", "email"]
+        .map(function (id) { return document.getElementById(id); });
+    const usernameRow = document.getElementById("usernameRow");
+    const emailRow = document.getElementById("emailRow");
+
+    function updateLoginFields() {
+        const isAdmin = document.getElementById("userid").value.trim().toUpperCase().startsWith("AD");
+        [usernameRow, emailRow].forEach(function (row) {
+            row.hidden = !isAdmin;
+        });
+        document.getElementById("username").required = isAdmin;
+        document.getElementById("email").required = isAdmin;
+    }
+
+    function clearLoginForm() {
+        loginForm.reset();
+        loginInputs.forEach(function (input) {
+            input.value = "";
+        });
+        updateLoginFields();
+    }
+
+    document.getElementById("userid").addEventListener("input", updateLoginFields);
+    clearLoginForm();
+    window.addEventListener("pageshow", clearLoginForm);
+
     loginForm.addEventListener("submit", async function (e) {
 
         e.preventDefault();
@@ -18,17 +44,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const userid = useridInput.value.trim().toUpperCase();
         const username = usernameInput.value.trim();
-        const password = passwordInput.value.trim();
+        const password = passwordInput.value;
         const email = emailInput.value.trim();
+        const isAdmin = userid.startsWith("AD");
 
 
         // ==========================================
         // VALIDATION
         // ==========================================
 
-        if (!userid || !username || !password || !email) {
+        if (!userid || !password || (isAdmin && (!username || !email))) {
 
-            alert("Please enter User ID, User Name, Password, and Email.");
+            alert(isAdmin
+                ? "Please enter Admin ID, username, password, and email."
+                : "Please enter your User ID and password.");
 
             return;
         }

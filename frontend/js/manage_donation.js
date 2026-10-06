@@ -60,22 +60,22 @@ async function loadDonations() {
 
         document.getElementById("acceptedDonations").textContent =
             donations.filter(function (donation) {
-                return donation.status === "Accepted";
+                return ["accepted", "approved"].includes(String(donation.status).toLowerCase());
             }).length;
 
         document.getElementById("pendingDonations").textContent =
             donations.filter(function (donation) {
-                return donation.status === "Pending";
+                return String(donation.status).toLowerCase() === "pending";
             }).length;
 
         document.getElementById("rejectedDonations").textContent =
             donations.filter(function (donation) {
-                return donation.status === "Rejected";
+                return String(donation.status).toLowerCase() === "rejected";
             }).length;
 
         document.getElementById("pickedUpDonations").textContent =
             donations.filter(function (donation) {
-                return donation.status === "Picked Up";
+                return ["picked up", "collected", "completed"].includes(String(donation.status).toLowerCase());
             }).length;
 
 
@@ -102,7 +102,7 @@ async function loadDonations() {
                 String(donation.category).toLowerCase().includes(searchText);
 
             const statusMatch =
-                !status || donation.status === status;
+                !status || String(donation.status).toLowerCase() === status.toLowerCase();
 
 
             return searchMatch && statusMatch;
@@ -244,7 +244,7 @@ function viewDonation(donationId) {
 async function deleteDonation(donationId) {
 
     const confirmDelete =
-        confirm("Are you sure you want to delete this donation?");
+        confirm("Delete this donation and its pickup history?");
 
 
     if (!confirmDelete) {

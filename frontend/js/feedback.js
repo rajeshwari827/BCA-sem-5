@@ -1,275 +1,81 @@
-// Feedback JavaScript
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("searchBtn").addEventListener("click", renderFeedback);
+    document.getElementById("searchFeedback").addEventListener("input", renderFeedback);
+    document.getElementById("roleFilter").addEventListener("change", renderFeedback);
+    loadFeedback();
+});
 
-let feedbackList = [
-    {
-        id: 1,
-        name: "Rahul Restaurant",
-        role: "Donor",
-        rating: 5,
-        feedback: "The food donation process is very easy and useful.",
-        date: "05/10/2026"
-    },
+let feedbackList = [];
 
-    {
-        id: 2,
-        name: "Helping Hands NGO",
-        role: "NGO",
-        rating: 4,
-        feedback: "It is easy to find and accept available food donations.",
-        date: "05/10/2026"
-    },
-
-    {
-        id: 3,
-        name: "Shree Food Center",
-        role: "Donor",
-        rating: 5,
-        feedback: "HungerFree helps us donate extra food instead of wasting it.",
-        date: "04/10/2026"
+async function loadFeedback() {
+    try {
+        const response = await fetch("/api/admin/feedback", { cache: "no-store" });
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || "Unable to load feedback.");
+        }
+        feedbackList = result.feedback || [];
+        updateSummary();
+        renderFeedback();
+    } catch (error) {
+        console.error("Feedback load error:", error);
+        document.getElementById("feedbackTableBody").innerHTML =
+            `<tr><td colspan="7">${error.message}</td></tr>`;
     }
-];
-
-
-// Display Feedback
-function displayFeedback(list) {
-
-    const tableBody = document.getElementById("feedbackTableBody");
-
-    tableBody.innerHTML = "";
-
-    if (list.length === 0) {
-
-        tableBody.innerHTML =
-            "<tr>" +
-            "<td colspan='7'>No feedback available.</td>" +
-            "</tr>";
-
-        return;
-    }
-
-
-    list.forEach(function (feedback) {
-
-        const row = document.createElement("tr");
-
-
-        // Feedback ID
-        const idCell = document.createElement("td");
-        idCell.textContent = feedback.id;
-        row.appendChild(idCell);
-
-
-        // User Name
-        const nameCell = document.createElement("td");
-        nameCell.textContent = feedback.name;
-        row.appendChild(nameCell);
-
-
-        // Role
-        const roleCell = document.createElement("td");
-        roleCell.textContent = feedback.role;
-        row.appendChild(roleCell);
-
-
-        // Rating
-        const ratingCell = document.createElement("td");
-        ratingCell.textContent = feedback.rating + " ★";
-        row.appendChild(ratingCell);
-
-
-        // Feedback
-        const feedbackCell = document.createElement("td");
-        feedbackCell.textContent = feedback.feedback;
-        row.appendChild(feedbackCell);
-
-
-        // Date
-        const dateCell = document.createElement("td");
-        dateCell.textContent = feedback.date;
-        row.appendChild(dateCell);
-
-
-        // Action
-        const actionCell = document.createElement("td");
-
-        const deleteButton = document.createElement("button");
-
-        deleteButton.textContent = "Delete";
-
-        deleteButton.type = "button";
-
-        deleteButton.onclick = function () {
-            deleteFeedback(feedback.id);
-        };
-
-        actionCell.appendChild(deleteButton);
-
-        row.appendChild(actionCell);
-
-
-        tableBody.appendChild(row);
-
-    });
-
 }
 
-
-// Search Feedback
-function searchFeedback() {
-
-    const searchText =
-        document.getElementById("searchFeedback")
-            .value
-            .toLowerCase()
-            .trim();
-
-
-    const selectedRole =
-        document.getElementById("roleFilter").value;
-
-
-    const filteredFeedback = feedbackList.filter(function (feedback) {
-
-        const nameMatch =
-            feedback.name
-                .toLowerCase()
-                .includes(searchText);
-
-
-        const roleMatch =
-            selectedRole === "" ||
-            feedback.role === selectedRole;
-
-
-        return nameMatch && roleMatch;
-
-    });
-
-
-    displayFeedback(filteredFeedback);
-
-}
-
-
-// Search Button
-document.getElementById("searchBtn").addEventListener(
-    "click",
-    searchFeedback
-);
-
-
-// Role Filter
-document.getElementById("roleFilter").addEventListener(
-    "change",
-    searchFeedback
-);
-
-
-// Search while typing
-document.getElementById("searchFeedback").addEventListener(
-    "input",
-    searchFeedback
-);
-
-
-// Delete Feedback
-function deleteFeedback(id) {
-
-    const confirmDelete = confirm(
-        "Are you sure you want to delete this feedback?"
+function renderFeedback() {
+    const query = document.getElementById("searchFeedback").value.trim().toLowerCase();
+    const role = document.getElementById("roleFilter").value;
+    const entries = feedbackList.filter(item =>
+        (!role || item.role === role) &&
+        (!query || [item.name, item.user_id, item.feedback].some(value =>
+            String(value || "").toLowerCase().includes(query)))
     );
-
-
-    if (!confirmDelete) {
+    const body = document.getElementById("feedbackTableBody");
+    body.replaceChildren();
+    if (!entries.length) {
+        body.innerHTML = "<tr><td colspan='7'>No feedback submitted yet.</td></tr>";
         return;
     }
-
-
-    feedbackList = feedbackList.filter(function (feedback) {
-
-        return feedback.id !== id;
-
+    entries.forEach(item => {
+        const row = body.insertRow();
+        [item.id, item.name, item.role, `${item.rating} ★`, item.feedback,
+            item.date ? new Date(item.date).toLocaleString() : "-"]
+            .forEach(value => { row.insertCell().textContent = value ?? "-"; });
+        const action = row.insertCell();
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = "Delete";
+        button.addEventListener("click", () => deleteFeedback(item.id));
+        action.appendChild(button);
     });
-
-
-    displayFeedback(feedbackList);
-
-    updateSummary();
-
 }
 
-
-// Update Summary
 function updateSummary() {
-
-    // Total Feedback
-    document.getElementById("totalFeedback").textContent =
-        feedbackList.length;
-
-
-    // Donor Feedback
-    let donorCount = 0;
-
-    feedbackList.forEach(function (feedback) {
-
-        if (feedback.role === "Donor") {
-            donorCount++;
-        }
-
-    });
-
-
+    document.getElementById("totalFeedback").textContent = feedbackList.length;
     document.getElementById("donorFeedback").textContent =
-        donorCount;
-
-
-    // NGO Feedback
-    let ngoCount = 0;
-
-    feedbackList.forEach(function (feedback) {
-
-        if (feedback.role === "NGO") {
-            ngoCount++;
-        }
-
-    });
-
-
+        feedbackList.filter(item => item.role === "Donor").length;
     document.getElementById("ngoFeedback").textContent =
-        ngoCount;
-
-
-    // Average Rating
-    if (feedbackList.length === 0) {
-
-        document.getElementById("averageRating").textContent =
-            "0 ★";
-
-        return;
-
-    }
-
-
-    let totalRating = 0;
-
-    feedbackList.forEach(function (feedback) {
-
-        totalRating += feedback.rating;
-
-    });
-
-
-    const averageRating =
-        totalRating / feedbackList.length;
-
-
-    document.getElementById("averageRating").textContent =
-        averageRating.toFixed(1) + " ★";
-
+        feedbackList.filter(item => item.role === "NGO").length;
+    const average = feedbackList.length
+        ? feedbackList.reduce((sum, item) => sum + Number(item.rating || 0), 0) / feedbackList.length
+        : 0;
+    document.getElementById("averageRating").textContent = `${average.toFixed(1)} ★`;
 }
 
-
-// Initial Display
-displayFeedback(feedbackList);
-
-updateSummary();
+async function deleteFeedback(id) {
+    if (!confirm("Delete this feedback record?")) return;
+    try {
+        const response = await fetch("/api/admin/feedback/delete", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ feedback_id: id })
+        });
+        const result = await response.json();
+        if (!response.ok || !result.success) throw new Error(result.message || "Unable to delete feedback.");
+        await loadFeedback();
+    } catch (error) {
+        alert(error.message);
+    }
+}

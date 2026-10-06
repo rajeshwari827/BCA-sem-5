@@ -67,19 +67,14 @@ async function loadNGOs() {
         document.getElementById("totalNGOs").textContent =
             ngos.length;
 
-        document.getElementById("approvedNGOs").textContent =
+        document.getElementById("activeNGOs").textContent =
             ngos.filter(function (ngo) {
-                return ngo.status === "Approved";
+                return String(ngo.status).toLowerCase() === "active";
             }).length;
 
-        document.getElementById("pendingNGOs").textContent =
+        document.getElementById("inactiveNGOs").textContent =
             ngos.filter(function (ngo) {
-                return ngo.status === "Pending";
-            }).length;
-
-        document.getElementById("rejectedNGOs").textContent =
-            ngos.filter(function (ngo) {
-                return ngo.status === "Rejected";
+                return String(ngo.status).toLowerCase() === "inactive";
             }).length;
 
 
@@ -296,7 +291,7 @@ function viewNGO(ngoId) {
 async function deleteNGO(ngoId) {
 
     const confirmDelete =
-        confirm("Are you sure you want to delete this NGO?");
+        confirm("Delete this NGO and its pickup history? Donations will remain available.");
 
 
     if (!confirmDelete) {

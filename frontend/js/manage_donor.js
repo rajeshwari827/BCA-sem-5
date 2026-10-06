@@ -69,17 +69,12 @@ async function loadDonors() {
 
         document.getElementById("approvedDonors").textContent =
             donors.filter(function (donor) {
-                return donor.status === "Approved";
+                return String(donor.status).toLowerCase() === "active";
             }).length;
 
-        document.getElementById("pendingDonors").textContent =
+        document.getElementById("inactiveDonors").textContent =
             donors.filter(function (donor) {
-                return donor.status === "Pending";
-            }).length;
-
-        document.getElementById("rejectedDonors").textContent =
-            donors.filter(function (donor) {
-                return donor.status === "Rejected";
+                return String(donor.status).toLowerCase() === "inactive";
             }).length;
 
 
@@ -296,7 +291,7 @@ function viewDonor(donorId) {
 async function deleteDonor(donorId) {
 
     const confirmDelete =
-        confirm("Are you sure you want to delete this donor?");
+        confirm("Delete this donor and all donation records belonging to them?");
 
 
     if (!confirmDelete) {

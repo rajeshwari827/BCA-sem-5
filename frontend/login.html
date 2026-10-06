@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login for existing user</title>
+    <title>Login | HungerFree</title>
     <link rel="stylesheet" href="css/login.css">
 </head>
 <body>
@@ -14,20 +14,21 @@
             <a href="ngo_registration.html" class="nav-btn">Food Receiver</a>
         </div>
         <div class="login-box">
-            <form id="loginForm">
-                <h1>LOGIN FOR EXISTING USERS</h1>
+            <form id="loginForm" autocomplete="off">
+                <h1>LOGIN TO HUNGERFREE</h1>
                 <table>
-                    <tr><td>User ID:<input type="text" id="userid" placeholder="Enter User ID" required></td></tr>
-                    <tr><td>User Name:<input type="text" id="username" name="username" placeholder="Enter Username" required></td></tr>
-                    <tr><td>Password:<input type="password" id="password" name="password" placeholder="Enter Password" required></td></tr>
-                    <tr><td>Email:<input type="email" id="email" name="email" placeholder="Enter Email ID" required></td></tr>
+                    <tr><td>User ID / Admin ID:<input type="text" id="userid" placeholder="Admin: AD001 | Donor: DN001 | Receiver: RN001" autocomplete="username" required></td></tr>
+                    <tr id="usernameRow"><td>User Name:<input type="text" id="username" placeholder="Enter admin username" autocomplete="off"></td></tr>
+                    <tr><td>Password:<input type="password" id="password" placeholder="Enter Password" autocomplete="current-password" required></td></tr>
+                    <tr id="emailRow"><td>Email:<input type="email" id="email" placeholder="Enter admin email" autocomplete="email"></td></tr>
                 </table>
+                <p>Donors and receivers sign in with their ID and password. Admins also enter their username and email.</p>
                 <h4>Not a user? Then register yourself first according to <a href="donor_registration.html">Food Donor</a> and <a href="ngo_registration.html">Food Receiver</a></h4>
                 <p id="loginError" style="color:red; text-align:center;"></p>
                 <button type="submit" id="loginButton">Submit</button>
             </form>
         </div>
     </div>
-    <script src="js/login.js"></script>
+    <script src="js/login.js?v=3"></script>
 </body>
 </html>

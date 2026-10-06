@@ -175,7 +175,7 @@ document.getElementById("changePasswordBtn")
 
 // Logout
 document.getElementById("logoutBtn")
-    .addEventListener("click", function () {
+    .addEventListener("click", async function () {
 
         const confirmLogout = confirm(
             "Are you sure you want to logout?"
@@ -187,42 +187,55 @@ document.getElementById("logoutBtn")
         }
 
 
+        try {
+            await fetch("/api/logout", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: "{}"
+            });
+        } catch (error) {
+            console.error("Admin logout error:", error);
+        }
+
+        ["user_id", "user_role", "token", "session_token"].forEach(function (key) {
+            localStorage.removeItem(key);
+            sessionStorage.removeItem(key);
+        });
         alert("Logged out successfully.");
-
-
-        window.location.href = "login.html";
+        window.location.href = "/login.html";
 
     });
 
 
-// Dashboard Summary
-function loadSummary() {
+// Load the summary from the same database-backed endpoint as the dashboard.
+async function loadSummary() {
+    const token = sessionStorage.getItem("token") ||
+        localStorage.getItem("token") ||
+        localStorage.getItem("session_token");
+    const headers = token ? { "Authorization": "Bearer " + token } : {};
 
-    // Sample values
-    const totalUsers = 25;
+    try {
+        const response = await fetch("/api/admin/dashboard", {
+            headers: headers,
+            cache: "no-store"
+        });
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || "Unable to load profile totals.");
+        }
 
-    const totalDonors = 15;
-
-    const totalNGOs = 10;
-
-    const totalDonations = 35;
-
-
-    document.getElementById("totalUsers").textContent =
-        totalUsers;
-
-
-    document.getElementById("totalDonors").textContent =
-        totalDonors;
-
-
-    document.getElementById("totalNGOs").textContent =
-        totalNGOs;
-
-
-    document.getElementById("totalDonations").textContent =
-        totalDonations;
-
+        const donors = Number(result.total_donors) || 0;
+        const ngos = Number(result.total_receivers ?? result.total_ngos) || 0;
+        document.getElementById("totalUsers").textContent = donors + ngos;
+        document.getElementById("totalDonors").textContent = donors;
+        document.getElementById("totalNGOs").textContent = ngos;
+        document.getElementById("totalDonations").textContent =
+            Number(result.total_donations) || 0;
+    } catch (error) {
+        console.error("Admin profile summary error:", error);
+        const status = document.getElementById("profileSummaryStatus");
+        if (status) status.textContent = "Could not load live totals. Refresh the page after signing in again.";
+    }
 }
 
 

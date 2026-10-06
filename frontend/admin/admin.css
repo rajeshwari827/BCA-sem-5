@@ -113,6 +113,24 @@ body {
     font-size: 18px;
 }
 
+.card small {
+    display: block;
+    margin-top: 7px;
+    color: #777;
+    font-size: 13px;
+}
+
+.dashboard-status {
+    min-height: 20px;
+    margin-top: 12px;
+    color: #555;
+    font-size: 14px !important;
+}
+
+.dashboard-status.error {
+    color: #a12622;
+}
+
 /* ================= SEARCH ================= */
 
 .search-box {
